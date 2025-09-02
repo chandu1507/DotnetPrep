@@ -1731,6 +1731,356 @@ public void CompleteProcessing()
             <h2>Advanced Concepts</h2>
             
             <div class="concept-card">
+                <h3>Exception Handling (Try-Catch-Finally)</h3>
+                
+                <div class="exception-intro">
+                    <p>Proper exception handling is crucial in enterprise applications for maintaining system stability, logging errors, and providing graceful degradation of functionality.</p>
+                </div>
+
+                <div class="exception-flow">
+                    <h4>📋 Exception Handling Flow</h4>
+                    <div class="flow-blocks">
+                        <div class="flow-block try-block">
+                            <h5>try Block</h5>
+                            <p>Contains code that <em>might throw</em> an exception</p>
+                            <ul>
+                                <li>Database access</li>
+                                <li>File I/O operations</li>
+                                <li>External API calls</li>
+                                <li>Network operations</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="flow-arrow">→</div>
+                        
+                        <div class="flow-block catch-block">
+                            <h5>catch Block</h5>
+                            <p>Handles the exception when it occurs</p>
+                            <ul>
+                                <li>Logging errors</li>
+                                <li>Returning safe responses</li>
+                                <li>Implementing retry logic</li>
+                                <li>Graceful degradation</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="flow-arrow">→</div>
+                        
+                        <div class="flow-block finally-block">
+                            <h5>finally Block</h5>
+                            <p>Code that <strong>always runs</strong></p>
+                            <ul>
+                                <li>Closing connections</li>
+                                <li>Releasing resources</li>
+                                <li>Cleanup operations</li>
+                                <li>Logging completion</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="enterprise-example">
+                    <h4>🏢 Enterprise Example: Database Repository</h4>
+                    <div class="code-example">
+                        <pre><code>public async Task&lt;bool&gt; UpdateCustomerAsync(int customerId, string newName)
+{
+    SqlConnection connection = null;
+    try
+    {
+        connection = new SqlConnection(_connectionString);
+        await connection.OpenAsync();
+
+        // Database operation that might throw
+        var command = new SqlCommand(
+            "UPDATE Customers SET Name = @Name WHERE Id = @Id", 
+            connection);
+        command.Parameters.AddWithValue("@Name", newName);
+        command.Parameters.AddWithValue("@Id", customerId);
+        
+        int rowsAffected = await command.ExecuteNonQueryAsync();
+        
+        _logger.LogInformation("Customer {CustomerId} updated successfully", customerId);
+        return rowsAffected > 0;
+    }
+    catch (SqlException ex)
+    {
+        // Handle database-specific errors
+        _logger.LogError(ex, "Database error updating customer {CustomerId}", customerId);
+        
+        // Decide whether to re-throw or return failure
+        if (ex.Number == 2) // Timeout
+        {
+            throw new TimeoutException("Database operation timed out", ex);
+        }
+        
+        return false;
+    }
+    catch (Exception ex)
+    {
+        // Handle any other unexpected errors
+        _logger.LogError(ex, "Unexpected error updating customer {CustomerId}", customerId);
+        throw; // Re-throw to preserve stack trace
+    }
+    finally
+    {
+        // Always cleanup - runs whether exception occurred or not
+        if (connection != null)
+        {
+            await connection.DisposeAsync();
+            _logger.LogDebug("Database connection closed");
+        }
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="modern-patterns">
+                    <h4>🆕 Modern Exception Handling Patterns</h4>
+                    
+                    <div class="pattern-comparison">
+                        <div class="pattern-old">
+                            <h5>Traditional Approach</h5>
+                            <div class="code-example">
+                                <pre><code>SqlConnection conn = null;
+try
+{
+    conn = new SqlConnection(connString);
+    conn.Open();
+    // Database operations
+}
+catch (SqlException ex)
+{
+    // Handle error
+}
+finally
+{
+    conn?.Dispose(); // Manual cleanup
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="pattern-modern">
+                            <h5>Modern Approach (using statement)</h5>
+                            <div class="code-example">
+                                <pre><code>try
+{
+    using var connection = new SqlConnection(connString);
+    await connection.OpenAsync();
+    // Database operations
+} // Dispose called automatically, even if exception occurs
+catch (SqlException ex)
+{
+    _logger.LogError(ex, "Database operation failed");
+    throw; // Re-throw with preserved stack trace
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="using-advantage">
+                        <p><strong>Advantage:</strong> The <code>using</code> statement automatically expands to a try-finally block, ensuring proper disposal even if exceptions occur.</p>
+                    </div>
+                </div>
+
+                <div class="exception-scenarios">
+                    <h4>🎯 Exception Handling Scenarios</h4>
+                    
+                    <div class="scenario-grid">
+                        <div class="scenario">
+                            <h5>✅ With Catch Block</h5>
+                            <p><strong>Result:</strong> Exception is handled, application continues</p>
+                            <div class="code-example">
+                                <pre><code>try
+{
+    // Risky operation
+    int result = 10 / 0;
+}
+catch (DivideByZeroException ex)
+{
+    _logger.LogError(ex, "Division by zero occurred");
+    // Application continues here
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="scenario">
+                            <h5>❌ Without Catch Block</h5>
+                            <p><strong>Result:</strong> Exception bubbles up, may crash application</p>
+                            <div class="code-example">
+                                <pre><code>try
+{
+    // Risky operation
+    int result = 10 / 0; // DivideByZeroException
+}
+finally
+{
+    Console.WriteLine("Cleanup runs");
+}
+// Exception continues to bubble up
+// Application may crash if not caught elsewhere</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="scenario">
+                            <h5>🔄 With Multiple Catch Blocks</h5>
+                            <p><strong>Result:</strong> Specific exception handling based on type</p>
+                            <div class="code-example">
+                                <pre><code>try
+{
+    await ProcessOrderAsync(orderId);
+}
+catch (ValidationException ex)
+{
+    return BadRequest(ex.Message);
+}
+catch (NotFoundException ex)
+{
+    return NotFound(ex.Message);
+}
+catch (Exception ex)
+{
+    _logger.LogError(ex, "Unexpected error processing order");
+    return StatusCode(500, "Internal server error");
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exception-flow-table">
+                    <h4>📊 Exception Handling Outcomes</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Scenario</th>
+                                <th>Has Catch?</th>
+                                <th>Has Finally?</th>
+                                <th>Program Continues?</th>
+                                <th>Finally Runs?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Exception thrown, catch exists</td>
+                                <td>✅ Yes</td>
+                                <td>Optional</td>
+                                <td>Yes, after catch</td>
+                                <td>Yes, if present</td>
+                            </tr>
+                            <tr>
+                                <td>Exception thrown, no catch</td>
+                                <td>❌ No</td>
+                                <td>May exist</td>
+                                <td>No, unless caught higher up</td>
+                                <td>Yes, then bubbles up</td>
+                            </tr>
+                            <tr>
+                                <td>Exception thrown, catch + finally</td>
+                                <td>✅ Yes</td>
+                                <td>✅ Yes</td>
+                                <td>Yes, after finally</td>
+                                <td>Always</td>
+                            </tr>
+                            <tr>
+                                <td>No exception thrown</td>
+                                <td>Skipped</td>
+                                <td>May exist</td>
+                                <td>Yes</td>
+                                <td>Yes, if present</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="best-practices">
+                    <h4>🎯 Enterprise Best Practices</h4>
+                    
+                    <div class="practice-grid">
+                        <div class="practice-item good">
+                            <h5>✅ Do This</h5>
+                            <ul>
+                                <li><strong>Catch specific exceptions first</strong> (SqlException, FileNotFoundException)</li>
+                                <li><strong>Log all exceptions</strong> with context and correlation IDs</li>
+                                <li><strong>Use structured logging</strong> (Serilog, Application Insights)</li>
+                                <li><strong>Preserve stack traces</strong> with <code>throw;</code> not <code>throw ex;</code></li>
+                                <li><strong>Use global exception middleware</strong> in ASP.NET Core</li>
+                                <li><strong>Implement retry policies</strong> for transient failures</li>
+                            </ul>
+                        </div>
+
+                        <div class="practice-item avoid">
+                            <h5>❌ Avoid This</h5>
+                            <ul>
+                                <li><strong>Swallowing exceptions</strong> with empty catch blocks</li>
+                                <li><strong>Catching Exception</strong> unless you re-throw</li>
+                                <li><strong>Business logic in finally</strong> blocks</li>
+                                <li><strong>Using exceptions for control flow</strong></li>
+                                <li><strong>Generic error messages</strong> without context</li>
+                                <li><strong>Ignoring inner exceptions</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="global-exception-handling">
+                    <h4>🌐 Global Exception Handling in ASP.NET Core</h4>
+                    <div class="code-example">
+                        <pre><code>// Custom Exception Middleware
+public class GlobalExceptionMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly ILogger&lt;GlobalExceptionMiddleware&gt; _logger;
+
+    public GlobalExceptionMiddleware(RequestDelegate next, ILogger&lt;GlobalExceptionMiddleware&gt; logger)
+    {
+        _next = next;
+        _logger = logger;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        try
+        {
+            await _next(context);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unhandled exception occurred. TraceId: {TraceId}", 
+                context.TraceIdentifier);
+            
+            await HandleExceptionAsync(context, ex);
+        }
+    }
+
+    private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    {
+        context.Response.ContentType = "application/json";
+        
+        var response = exception switch
+        {
+            ValidationException => new { StatusCode = 400, Message = exception.Message },
+            NotFoundException => new { StatusCode = 404, Message = "Resource not found" },
+            UnauthorizedException => new { StatusCode = 401, Message = "Unauthorized" },
+            _ => new { StatusCode = 500, Message = "An error occurred processing your request" }
+        };
+
+        context.Response.StatusCode = response.StatusCode;
+        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+    }
+}
+
+// Registration in Program.cs
+app.UseMiddleware&lt;GlobalExceptionMiddleware&gt;();</code></pre>
+                    </div>
+                </div>
+
+                <div class="interview-tips">
+                    <h4>🎯 Interview-Ready Summary</h4>
+                    <p>"In C#, I use try blocks around code that might fail—like database access or file I/O. The catch block lets me log and recover from errors, while finally ensures cleanup always happens. For disposable resources, I prefer using statements for cleaner code, but finally is crucial for manual resource management. In enterprise applications, I implement global exception middleware for consistent error handling and always log exceptions with proper context for debugging."</p>
+                </div>
+            </div>
+            
+            <div class="concept-card">
                 <h3>Design Patterns</h3>
                 <div class="patterns">
                     <div class="pattern">

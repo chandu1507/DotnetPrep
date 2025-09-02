@@ -1826,6 +1826,351 @@ html {
     background-color: #f8f9fa;
 }
 
+/* Exception Handling Styles */
+.exception-intro {
+    background-color: #e3f2fd;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border-left: 4px solid #2196f3;
+    text-align: center;
+    font-style: italic;
+}
+
+.exception-flow {
+    margin: 2rem 0;
+}
+
+.exception-flow h4 {
+    color: #2196f3;
+    margin-bottom: 1.5rem;
+}
+
+.flow-blocks {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.flow-block {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    min-width: 200px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.flow-block:hover {
+    transform: translateY(-5px);
+}
+
+.flow-block.try-block {
+    border-left: 5px solid #3498db;
+}
+
+.flow-block.catch-block {
+    border-left: 5px solid #e74c3c;
+}
+
+.flow-block.finally-block {
+    border-left: 5px solid #f39c12;
+}
+
+.flow-block h5 {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.flow-block.try-block h5 {
+    color: #3498db;
+}
+
+.flow-block.catch-block h5 {
+    color: #e74c3c;
+}
+
+.flow-block.finally-block h5 {
+    color: #f39c12;
+}
+
+.flow-block ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0;
+}
+
+.flow-block li {
+    padding: 0.3rem 0;
+    padding-left: 1rem;
+    position: relative;
+}
+
+.flow-block li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #666;
+}
+
+.flow-arrow {
+    font-size: 2rem;
+    color: #3498db;
+    font-weight: bold;
+}
+
+.enterprise-example {
+    background-color: #f8f9fa;
+    padding: 2rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+    border-left: 4px solid #28a745;
+}
+
+.enterprise-example h4 {
+    color: #28a745;
+    margin-bottom: 1.5rem;
+}
+
+.modern-patterns {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+    border-left: 4px solid #6c5ce7;
+}
+
+.modern-patterns h4 {
+    color: #6c5ce7;
+    margin-bottom: 1.5rem;
+}
+
+.pattern-comparison {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin: 1.5rem 0;
+}
+
+.pattern-old,
+.pattern-modern {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.pattern-old {
+    border-left: 4px solid #95a5a6;
+}
+
+.pattern-modern {
+    border-left: 4px solid #2ecc71;
+}
+
+.pattern-old h5 {
+    color: #95a5a6;
+    margin-bottom: 1rem;
+}
+
+.pattern-modern h5 {
+    color: #2ecc71;
+    margin-bottom: 1rem;
+}
+
+.using-advantage {
+    background-color: #d4edda;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-top: 1rem;
+    border-left: 3px solid #28a745;
+}
+
+.exception-scenarios {
+    margin: 2rem 0;
+}
+
+.exception-scenarios h4 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+.scenario-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.scenario {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.scenario:hover {
+    transform: translateY(-3px);
+}
+
+.scenario:nth-child(1) {
+    border-left: 5px solid #28a745;
+}
+
+.scenario:nth-child(2) {
+    border-left: 5px solid #e74c3c;
+}
+
+.scenario:nth-child(3) {
+    border-left: 5px solid #3498db;
+}
+
+.scenario h5 {
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.exception-flow-table {
+    margin: 2rem 0;
+}
+
+.exception-flow-table h4 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.exception-flow-table table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.exception-flow-table th {
+    background-color: #34495e;
+    color: white;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.exception-flow-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.exception-flow-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.best-practices {
+    background-color: #f8f9fa;
+    padding: 2rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+    border-left: 4px solid #17a2b8;
+}
+
+.best-practices h4 {
+    color: #17a2b8;
+    margin-bottom: 1.5rem;
+}
+
+.practice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+}
+
+.practice-item {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.practice-item:hover {
+    transform: translateY(-3px);
+}
+
+.practice-item.good {
+    border-left: 5px solid #28a745;
+}
+
+.practice-item.avoid {
+    border-left: 5px solid #e74c3c;
+}
+
+.practice-item h5 {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.practice-item.good h5 {
+    color: #28a745;
+}
+
+.practice-item.avoid h5 {
+    color: #e74c3c;
+}
+
+.practice-item ul {
+    list-style: none;
+    padding: 0;
+}
+
+.practice-item li {
+    margin-bottom: 0.8rem;
+    padding-left: 1.5rem;
+    position: relative;
+    line-height: 1.5;
+}
+
+.practice-item.good li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #28a745;
+    font-weight: bold;
+}
+
+.practice-item.avoid li:before {
+    content: "✗";
+    position: absolute;
+    left: 0;
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.global-exception-handling {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+}
+
+.global-exception-handling h4 {
+    color: white;
+    margin-bottom: 1.5rem;
+}
+
+.global-exception-handling .code-example {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+.global-exception-handling .code-example pre {
+    color: #f8f9fa;
+    margin: 0;
+}
+
 /* Print Styles */
 @media print {
     .main-nav {
