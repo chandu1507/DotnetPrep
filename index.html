@@ -2370,6 +2370,500 @@ public class VipCustomerPricing : IPricingStrategy
             </div>
 
             <div class="concept-card">
+                <h3>C# Generics</h3>
+                
+                <div class="generics-definition">
+                    <p><strong>Definition:</strong> Generics allow you to define classes, interfaces, methods, and delegates with a placeholder for the type of data they store or use.</p>
+                    <div class="generics-benefits">
+                        <div class="benefit">
+                            <h6>🛡️ Type Safety</h6>
+                            <p>Catch type errors at compile time, not runtime</p>
+                        </div>
+                        <div class="benefit">
+                            <h6>♻️ Code Reuse</h6>
+                            <p>Write one implementation that works for many types</p>
+                        </div>
+                        <div class="benefit">
+                            <h6>⚡ Performance</h6>
+                            <p>No boxing/unboxing for value types</p>
+                        </div>
+                        <div class="benefit">
+                            <h6>🔧 Flexibility</h6>
+                            <p>Type-agnostic APIs, collections, and algorithms</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generics-comparison">
+                    <h4>📊 Generic vs Non-Generic Collections</h4>
+                    
+                    <div class="comparison-grid">
+                        <div class="without-generics">
+                            <h5>❌ Without Generics</h5>
+                            <div class="code-example">
+                                <pre><code>ArrayList list = new ArrayList();
+list.Add(1);
+list.Add("hello"); // Compiles, but type issues at runtime!
+
+// Type casting required
+int value = (int)list[0]; // Runtime error possible
+string text = (string)list[1];</code></pre>
+                            </div>
+                            <div class="issues">
+                                <p><strong>Issues:</strong></p>
+                                <ul>
+                                    <li>No compile-time type checking</li>
+                                    <li>Boxing/unboxing performance overhead</li>
+                                    <li>Runtime type casting errors</li>
+                                    <li>No IntelliSense support</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="with-generics">
+                            <h5>✅ With Generics</h5>
+                            <div class="code-example">
+                                <pre><code>List&lt;int&gt; intList = new List&lt;int&gt;();
+intList.Add(1);
+// intList.Add("hello"); // Compile error, type safe!
+
+// No casting required
+int value = intList[0]; // Type safe
+var sum = intList.Sum(); // IntelliSense works</code></pre>
+                            </div>
+                            <div class="benefits">
+                                <p><strong>Benefits:</strong></p>
+                                <ul>
+                                    <li>Compile-time type safety</li>
+                                    <li>No boxing/unboxing overhead</li>
+                                    <li>No runtime casting errors</li>
+                                    <li>Full IntelliSense support</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generic-repository-example">
+                    <h4>🏢 Enterprise Example: Generic Repository</h4>
+                    <div class="code-example">
+                        <pre><code>public interface IRepository&lt;T&gt; where T : class
+{
+    Task&lt;T&gt; GetByIdAsync(int id);
+    Task&lt;IEnumerable&lt;T&gt;&gt; GetAllAsync();
+    Task AddAsync(T entity);
+    Task UpdateAsync(T entity);
+    Task DeleteAsync(int id);
+    Task&lt;IEnumerable&lt;T&gt;&gt; FindAsync(Expression&lt;Func&lt;T, bool&gt;&gt; predicate);
+}
+
+public class Repository&lt;T&gt; : IRepository&lt;T&gt; where T : class
+{
+    private readonly DbContext _context;
+    private readonly DbSet&lt;T&gt; _dbSet;
+
+    public Repository(DbContext context)
+    {
+        _context = context;
+        _dbSet = context.Set&lt;T&gt;();
+    }
+
+    public async Task&lt;T&gt; GetByIdAsync(int id)
+    {
+        return await _dbSet.FindAsync(id);
+    }
+
+    public async Task&lt;IEnumerable&lt;T&gt;&gt; GetAllAsync()
+    {
+        return await _dbSet.ToListAsync();
+    }
+
+    // Implementation works for Customer, Order, Product, etc.
+}
+
+// Usage
+IRepository&lt;Customer&gt; customerRepo = new Repository&lt;Customer&gt;(dbContext);
+IRepository&lt;Order&gt; orderRepo = new Repository&lt;Order&gt;(dbContext);</code></pre>
+                    </div>
+                </div>
+
+                <div class="generic-constraints">
+                    <h4>🔒 Generic Constraints</h4>
+                    <p>Constraints restrict what types can be used as generic parameters, enabling safer and more predictable code.</p>
+                    
+                    <div class="constraints-grid">
+                        <div class="constraint-type">
+                            <h5>where T : class</h5>
+                            <p>Only reference types allowed</p>
+                            <div class="code-example">
+                                <pre><code>public class StringProcessor&lt;T&gt; where T : class
+{
+    public bool IsNull(T value) => value == null;
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="constraint-type">
+                            <h5>where T : struct</h5>
+                            <p>Only value types allowed</p>
+                            <div class="code-example">
+                                <pre><code>public class Calculator&lt;T&gt; where T : struct
+{
+    public T Add(T a, T b) => /* numeric operations */;
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="constraint-type">
+                            <h5>where T : new()</h5>
+                            <p>Must have parameterless constructor</p>
+                            <div class="code-example">
+                                <pre><code>public class Factory&lt;T&gt; where T : new()
+{
+    public T CreateInstance() => new T();
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="constraint-type">
+                            <h5>where T : BaseClass</h5>
+                            <p>Must inherit from specific class</p>
+                            <div class="code-example">
+                                <pre><code>public class EntityProcessor&lt;T&gt; where T : BaseEntity
+{
+    public void SetAuditInfo(T entity)
+    {
+        entity.ModifiedDate = DateTime.UtcNow;
+    }
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="constraint-type">
+                            <h5>where T : IInterface</h5>
+                            <p>Must implement specific interface</p>
+                            <div class="code-example">
+                                <pre><code>public class Sorter&lt;T&gt; where T : IComparable&lt;T&gt;
+{
+    public List&lt;T&gt; Sort(List&lt;T&gt; items)
+    {
+        return items.OrderBy(x => x).ToList();
+    }
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="constraint-type">
+                            <h5>Multiple Constraints</h5>
+                            <p>Combine multiple constraints</p>
+                            <div class="code-example">
+                                <pre><code>public class Repository&lt;T&gt; 
+    where T : BaseEntity, IValidatable, new()
+{
+    public T CreateAndValidate()
+    {
+        var entity = new T();
+        entity.Validate();
+        return entity;
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="variance-concepts">
+                    <h4>🔄 Covariance & Contravariance</h4>
+                    <p>Advanced concepts dealing with type compatibility for generic interfaces and delegates.</p>
+                    
+                    <div class="variance-explanation">
+                        <div class="covariance-section">
+                            <h5>📤 Covariance (out)</h5>
+                            <p>Lets you use a more derived type than originally specified. Applies to <strong>output positions</strong> (return values).</p>
+                            
+                            <div class="variance-example">
+                                <h6>Class Hierarchy Example</h6>
+                                <div class="code-example">
+                                    <pre><code>class Animal { }
+class Dog : Animal { }
+
+// Covariance in action
+IEnumerable&lt;Dog&gt; dogs = new List&lt;Dog&gt; { new Dog(), new Dog() };
+IEnumerable&lt;Animal&gt; animals = dogs; // ✅ OK because of covariance
+
+// Why this works:
+// - IEnumerable&lt;T&gt; is covariant (marked with 'out T')
+// - You can only read from IEnumerable, never add to it
+// - Every Dog IS an Animal, so reading Dogs as Animals is safe</code></pre>
+                                </div>
+                            </div>
+
+                            <div class="variance-memory-aid">
+                                <p><strong>Memory Aid:</strong> <em>COvariance → Out</em> (you get objects out, so it's about returns)</p>
+                            </div>
+                        </div>
+
+                        <div class="contravariance-section">
+                            <h5>📥 Contravariance (in)</h5>
+                            <p>Lets you use a more generic type than originally specified. Applies to <strong>input positions</strong> (method parameters).</p>
+                            
+                            <div class="variance-example">
+                                <h6>Comparer Example</h6>
+                                <div class="code-example">
+                                    <pre><code>public interface IComparer&lt;in T&gt;
+{
+    int Compare(T a, T b);
+}
+
+// Contravariance in action
+IComparer&lt;Animal&gt; animalComparer = new AnimalComparer();
+IComparer&lt;Dog&gt; dogComparer = animalComparer; // ✅ OK because of contravariance
+
+// Why this works:
+// - IComparer&lt;T&gt; is contravariant (marked with 'in T')
+// - If you can compare any Animal, you can compare Dogs
+// - Dogs are Animals, so Animal comparer works for Dogs</code></pre>
+                                </div>
+                            </div>
+
+                            <div class="variance-memory-aid">
+                                <p><strong>Memory Aid:</strong> <em>Contravariance → Input</em> (you put objects in, so it's about parameters)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="variance-summary-table">
+                        <h5>📋 Variance Summary</h5>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Concept</th>
+                                    <th>Keyword</th>
+                                    <th>Direction</th>
+                                    <th>Example Interface</th>
+                                    <th>Assignment Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Covariance</td>
+                                    <td><code>out</code></td>
+                                    <td>Output</td>
+                                    <td><code>IEnumerable&lt;out T&gt;</code></td>
+                                    <td><code>IEnumerable&lt;Animal&gt; = IEnumerable&lt;Dog&gt;</code></td>
+                                </tr>
+                                <tr>
+                                    <td>Contravariance</td>
+                                    <td><code>in</code></td>
+                                    <td>Input</td>
+                                    <td><code>IComparer&lt;in T&gt;</code></td>
+                                    <td><code>IComparer&lt;Dog&gt; = IComparer&lt;Animal&gt;</code></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="generic-methods">
+                    <h4>🔧 Generic Methods</h4>
+                    <p>You can declare methods (not just classes) with generic type parameters.</p>
+                    
+                    <div class="generic-method-examples">
+                        <div class="method-example">
+                            <h5>Utility Method Example</h5>
+                            <div class="code-example">
+                                <pre><code>public static class GenericUtilities
+{
+    // Generic swap method
+    public static void Swap&lt;T&gt;(ref T a, ref T b)
+    {
+        T temp = a;
+        a = b;
+        b = temp;
+    }
+
+    // Generic conversion method
+    public static TResult ConvertTo&lt;TSource, TResult&gt;(TSource source)
+        where TResult : class, new()
+    {
+        // Mapping logic here
+        return new TResult();
+    }
+
+    // Generic validation method
+    public static bool IsValid&lt;T&gt;(T item) where T : IValidatable
+    {
+        return item.IsValid();
+    }
+}
+
+// Usage
+int x = 10, y = 20;
+GenericUtilities.Swap(ref x, ref y); // x=20, y=10
+
+string name = "John";
+bool isValid = GenericUtilities.IsValid(name);</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="enterprise-examples">
+                    <h4>🏢 Advanced Enterprise Examples</h4>
+                    
+                    <div class="enterprise-patterns">
+                        <div class="pattern-example">
+                            <h5>Generic Event Handler</h5>
+                            <div class="code-example">
+                                <pre><code>public interface IEventHandler&lt;in TEvent&gt;
+{
+    Task HandleAsync(TEvent eventData);
+}
+
+public class OrderCreatedEventHandler : IEventHandler&lt;OrderCreatedEvent&gt;
+{
+    public async Task HandleAsync(OrderCreatedEvent eventData)
+    {
+        // Send confirmation email
+        // Update inventory
+        // Log audit trail
+    }
+}
+
+// Event dispatcher using contravariance
+public class EventDispatcher
+{
+    public async Task PublishAsync&lt;T&gt;(T eventData)
+    {
+        var handlers = _serviceProvider.GetServices&lt;IEventHandler&lt;T&gt;&gt;();
+        await Task.WhenAll(handlers.Select(h => h.HandleAsync(eventData)));
+    }
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="pattern-example">
+                            <h5>Generic Audit Helper</h5>
+                            <div class="code-example">
+                                <pre><code>public static class AuditHelper&lt;T&gt; where T : class
+{
+    public static void LogCreate(T entity, string userId)
+    {
+        var entityName = typeof(T).Name;
+        var properties = typeof(T).GetProperties()
+            .ToDictionary(p => p.Name, p => p.GetValue(entity));
+        
+        _logger.LogInformation("Created {EntityType} by {UserId}: {@Properties}",
+            entityName, userId, properties);
+    }
+
+    public static void LogUpdate(T oldEntity, T newEntity, string userId)
+    {
+        var changes = GetChanges(oldEntity, newEntity);
+        _logger.LogInformation("Updated {EntityType} by {UserId}: {@Changes}",
+            typeof(T).Name, userId, changes);
+    }
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="pattern-example">
+                            <h5>Generic Result Pattern</h5>
+                            <div class="code-example">
+                                <pre><code>public class Result&lt;T&gt;
+{
+    public bool IsSuccess { get; private set; }
+    public T Value { get; private set; }
+    public string Error { get; private set; }
+
+    private Result(T value)
+    {
+        IsSuccess = true;
+        Value = value;
+    }
+
+    private Result(string error)
+    {
+        IsSuccess = false;
+        Error = error;
+    }
+
+    public static Result&lt;T&gt; Success(T value) => new Result&lt;T&gt;(value);
+    public static Result&lt;T&gt; Failure(string error) => new Result&lt;T&gt;(error);
+}
+
+// Usage in service methods
+public async Task&lt;Result&lt;Customer&gt;&gt; GetCustomerAsync(int id)
+{
+    try
+    {
+        var customer = await _repository.GetByIdAsync(id);
+        return customer != null 
+            ? Result&lt;Customer&gt;.Success(customer)
+            : Result&lt;Customer&gt;.Failure("Customer not found");
+    }
+    catch (Exception ex)
+    {
+        return Result&lt;Customer&gt;.Failure(ex.Message);
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generics-features-table">
+                    <h4>📊 Generics Features Summary</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Benefit</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Type Parameter</td>
+                                <td>Code works for any type</td>
+                                <td><code>List&lt;T&gt;</code>, <code>Dictionary&lt;TKey,TValue&gt;</code></td>
+                            </tr>
+                            <tr>
+                                <td>Compile-time Safety</td>
+                                <td>Prevents runtime type errors</td>
+                                <td><code>List&lt;int&gt;</code> won't accept strings</td>
+                            </tr>
+                            <tr>
+                                <td>Performance</td>
+                                <td>No boxing/unboxing for value types</td>
+                                <td><code>List&lt;int&gt;</code> vs <code>ArrayList</code></td>
+                            </tr>
+                            <tr>
+                                <td>Code Reuse</td>
+                                <td>DRY principle; one implementation</td>
+                                <td>Generic repository for all entities</td>
+                            </tr>
+                            <tr>
+                                <td>Constraints</td>
+                                <td>Enforce type requirements</td>
+                                <td><code>where T : IComparable</code></td>
+                            </tr>
+                            <tr>
+                                <td>Variance</td>
+                                <td>Type compatibility flexibility</td>
+                                <td>Covariance/Contravariance</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="interview-tips">
+                    <h4>🎯 Interview-Ready Summary</h4>
+                    <p>"Generics in C# let us define classes, interfaces, and methods with type parameters, enabling the same code to work with different data types while maintaining type safety and performance. They eliminate code duplication, prevent runtime errors through compile-time checking, and avoid boxing/unboxing overhead. I use generics extensively in enterprise projects for repository patterns, utility functions, event handling, and strongly-typed collections. Advanced features like constraints allow enforcing type requirements, while covariance and contravariance provide flexibility in type assignments for interfaces and delegates."</p>
+                </div>
+            </div>
+
+            <div class="concept-card">
                 <h3>Asynchronous Programming</h3>
                 <div class="async-content">
                     <h4>async/await Pattern</h4>
