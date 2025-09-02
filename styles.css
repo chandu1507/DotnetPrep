@@ -986,6 +986,297 @@ html {
     transform: scale(1.05);
 }
 
+/* CLR Components */
+.clr-intro {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    font-style: italic;
+    text-align: center;
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.clr-responsibilities {
+    display: grid;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.clr-responsibility {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+    transition: transform 0.3s ease;
+}
+
+.clr-responsibility:hover {
+    transform: translateX(10px);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+}
+
+.clr-responsibility h4 {
+    color: #3498db;
+    margin-bottom: 0.5rem;
+}
+
+.clr-execution-flow {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+}
+
+.clr-execution-flow h4 {
+    color: white;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.execution-steps {
+    display: grid;
+    gap: 1rem;
+}
+
+.step {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid rgba(255, 255, 255, 0.3);
+    transition: background-color 0.3s ease;
+}
+
+.step:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.clr-cloud-deployment {
+    background-color: #f8f9fa;
+    padding: 2rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+    border-left: 4px solid #00cec9;
+}
+
+.clr-cloud-deployment h4 {
+    color: #00cec9;
+    margin-bottom: 1.5rem;
+}
+
+.cloud-scenarios {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.cloud-scenario {
+    background: linear-gradient(135deg, #00cec9 0%, #00b894 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.cloud-scenario:hover {
+    transform: translateY(-5px);
+}
+
+.cloud-scenario h5 {
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.cloud-diagram {
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.diagram-flow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.diagram-step {
+    background-color: #00cec9;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Garbage Collection Styles */
+.gc-overview {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border-left: 4px solid #e17055;
+}
+
+.gc-process {
+    margin: 2rem 0;
+}
+
+.gc-process h4 {
+    color: #e17055;
+    margin-bottom: 1.5rem;
+}
+
+.gc-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.gc-step {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 2px solid #e17055;
+    transition: transform 0.3s ease;
+}
+
+.gc-step:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(225, 112, 85, 0.2);
+}
+
+.gc-step h5 {
+    color: #e17055;
+    margin-bottom: 1rem;
+}
+
+.gc-circular-references {
+    background-color: #fff3cd;
+    padding: 2rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+    border-left: 4px solid #ffc107;
+}
+
+.gc-circular-references h4 {
+    color: #856404;
+    margin-bottom: 1rem;
+}
+
+.gc-generations {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.generation {
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.generation:hover {
+    transform: translateY(-5px);
+}
+
+.generation h4 {
+    background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+    color: white;
+    padding: 1rem;
+    margin: 0;
+    text-align: center;
+}
+
+.gen-content {
+    padding: 1.5rem;
+}
+
+.gen-content ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.gc-why-generational {
+    background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.gc-why-generational h4 {
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.memory-practices {
+    display: grid;
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.practice {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    border-left: 5px solid #00b894;
+    transition: transform 0.3s ease;
+}
+
+.practice:hover {
+    transform: translateX(10px);
+    box-shadow: 0 5px 15px rgba(0, 184, 148, 0.2);
+}
+
+.practice h4 {
+    margin-bottom: 1rem;
+}
+
+.practice h4:contains("❌") {
+    color: #e74c3c;
+}
+
+.practice h4:contains("✅") {
+    color: #00b894;
+}
+
+.practice h4:contains("⚠️") {
+    color: #f39c12;
+}
+
+.enterprise-scenarios {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.scenario {
+    background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.scenario:hover {
+    transform: scale(1.05);
+}
+
+.scenario h4 {
+    color: white;
+    margin-bottom: 1rem;
+}
+
 /* Print Styles */
 @media print {
     .main-nav {

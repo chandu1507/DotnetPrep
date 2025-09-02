@@ -26,6 +26,7 @@
                 <li><a href="#database-sql">Database & SQL</a></li>
                 <li><a href="#enterprise-architecture">Enterprise Architecture</a></li>
                 <li><a href="#cloud-azure">Cloud & Azure</a></li>
+                <li><a href="#memory-management">Memory Management</a></li>
                 <li><a href="#advanced-concepts">Advanced Concepts</a></li>
                 <li><a href="#best-practices">Best Practices</a></li>
             </ul>
@@ -334,43 +335,94 @@ public interface IProfileService {
             </div>
 
             <div class="concept-card">
-                <h3>CLR, CTS & Managed Code</h3>
-                <div class="dotnet-architecture">
-                    <div class="architecture-component">
-                        <h4>CLR (Common Language Runtime)</h4>
-                        <p>The virtual machine that runs .NET applications</p>
-                        <ul>
-                            <li>Memory management (Garbage Collection)</li>
-                            <li>Type safety and security</li>
-                            <li>Exception handling</li>
-                            <li>Thread management</li>
-                        </ul>
+                <h3>CLR (Common Language Runtime) - The Execution Engine</h3>
+                <p class="clr-intro">The CLR is the heart of the .NET ecosystem—it's the execution engine that actually runs your code behind the scenes, similar to the Java Virtual Machine (JVM).</p>
+                
+                <div class="clr-responsibilities">
+                    <div class="clr-responsibility">
+                        <h4>1. Just-In-Time (JIT) Compilation</h4>
+                        <p>Your C# code → IL (Intermediate Language) → Machine code at runtime</p>
+                        <div class="example">
+                            <p><strong>Enterprise Example:</strong> Your web API DLL is IL until the CLR loads it and JITs only the parts actually used, making startups faster and memory usage efficient.</p>
+                        </div>
                     </div>
-                    
-                    <div class="architecture-component">
-                        <h4>CTS (Common Type System)</h4>
-                        <p>Defines how types are declared and used across languages</p>
-                        <ul>
-                            <li>Cross-language interoperability (C#, F#, VB.NET)</li>
-                            <li>Type safety guarantees</li>
-                            <li>Unified type system</li>
-                        </ul>
+
+                    <div class="clr-responsibility">
+                        <h4>2. Memory Management (Garbage Collection)</h4>
+                        <p>Automatic memory allocation/deallocation prevents memory leaks</p>
+                        <div class="example">
+                            <p><strong>Real Use:</strong> In a high-traffic payment gateway API, object allocations for requests/responses are automatically managed, reducing memory bugs.</p>
+                        </div>
                     </div>
-                    
-                    <div class="architecture-component">
-                        <h4>Managed Code Benefits</h4>
-                        <ul>
-                            <li>Memory safety (no buffer overflows)</li>
-                            <li>Automatic garbage collection</li>
-                            <li>Security sandbox</li>
-                            <li>Cross-platform deployment</li>
-                        </ul>
+
+                    <div class="clr-responsibility">
+                        <h4>3. Type Safety & Code Verification</h4>
+                        <p>Prevents using objects as incompatible types, avoiding crashes and vulnerabilities</p>
+                        <div class="example">
+                            <p><strong>Why Important:</strong> Prevents crashes, vulnerabilities, and data corruption in multi-team enterprise projects.</p>
+                        </div>
+                    </div>
+
+                    <div class="clr-responsibility">
+                        <h4>4. Exception Handling</h4>
+                        <p>Structured, consistent error handling across all .NET languages</p>
+                        <div class="example">
+                            <p><strong>Enterprise Use:</strong> Global error handler middleware for APIs—all exceptions bubble up via CLR and can be caught/logged uniformly.</p>
+                        </div>
+                    </div>
+
+                    <div class="clr-responsibility">
+                        <h4>5. Thread Management & Concurrency</h4>
+                        <p>Manages threads and supports multi-threading (ThreadPool, async/await)</p>
+                        <div class="example">
+                            <p><strong>Enterprise Example:</strong> In high-load order processing, background workers and parallel tasks are coordinated by CLR for maximum throughput.</p>
+                        </div>
+                    </div>
+
+                    <div class="clr-responsibility">
+                        <h4>6. Security & Interoperability</h4>
+                        <p>Integrates with OS-level security and enables calling unmanaged code (C/C++ DLLs)</p>
+                        <div class="example">
+                            <p><strong>Real Use:</strong> Legacy enterprise apps calling old C++ DLLs for specialized processing, safely handled by CLR.</p>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="example">
-                    <h4>Real Project Impact:</h4>
-                    <p>Memory leaks, unhandled exceptions, and security vulnerabilities are minimized compared to unmanaged code (C/C++ DLLs), reducing production incidents and maintenance costs.</p>
+
+                <div class="clr-execution-flow">
+                    <h4>📋 Typical .NET App Execution Flow</h4>
+                    <div class="execution-steps">
+                        <div class="step">1. Your code → Compiled to IL (by C# compiler)</div>
+                        <div class="step">2. You start the app → CLR loads the main assembly</div>
+                        <div class="step">3. CLR/JIT → Converts IL to native code as needed</div>
+                        <div class="step">4. CLR executes your code, manages memory, threads, exceptions</div>
+                        <div class="step">5. App finishes → CLR cleans up, runs finalizers, releases resources</div>
+                    </div>
+                </div>
+
+                <div class="clr-cloud-deployment">
+                    <h4>🌐 CLR in Cloud Deployments (Azure)</h4>
+                    <div class="cloud-scenarios">
+                        <div class="cloud-scenario">
+                            <h5>Azure App Service</h5>
+                            <p>Azure provisions servers with .NET runtime pre-installed. Your API runs within the CLR—Azure manages it for you.</p>
+                        </div>
+                        <div class="cloud-scenario">
+                            <h5>Azure Functions</h5>
+                            <p>Serverless, but still runs on VMs. Azure spins up instances with .NET runtime/CLR when functions are triggered.</p>
+                        </div>
+                        <div class="cloud-scenario">
+                            <h5>Containers (AKS)</h5>
+                            <p>You package your app with required .NET runtime. CLR runs your code inside the container.</p>
+                        </div>
+                    </div>
+                    <div class="cloud-diagram">
+                        <div class="diagram-flow">
+                            <span class="diagram-step">[You]</span> → 
+                            <span class="diagram-step">[Deploy API]</span> → 
+                            <span class="diagram-step">[Azure Runtime]</span> → 
+                            <span class="diagram-step">[CLR Runs Code]</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1011,6 +1063,198 @@ sc create "MyService" binpath="C:\MyApp\MyService.exe"</code></pre>
                     <li><strong>Refactor:</strong> Redesign for cloud-native features</li>
                     <li><strong>Hybrid:</strong> Keep some components on-premises, others in cloud</li>
                 </ul>
+            </div>
+        </section>
+
+        <section id="memory-management" class="topic-section">
+            <h2>Memory Management & Garbage Collection</h2>
+            
+            <div class="concept-card">
+                <h3>Understanding .NET Garbage Collection</h3>
+                <div class="gc-overview">
+                    <p>The .NET Garbage Collector automatically frees up memory by cleaning up objects that your application is no longer using. It's <strong>heap-wide, not per object or per class</strong>.</p>
+                </div>
+                
+                <div class="gc-process">
+                    <h4>How Garbage Collection Works</h4>
+                    <div class="gc-steps">
+                        <div class="gc-step">
+                            <h5>1. Roots & Reachability</h5>
+                            <p>GC starts from <em>roots</em>:</p>
+                            <ul>
+                                <li>Local variables in running methods</li>
+                                <li>Static fields</li>
+                                <li>CPU registers</li>
+                                <li>Application threads</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="gc-step">
+                            <h5>2. Mark Phase</h5>
+                            <p>GC walks from roots, marking all reachable objects (directly or indirectly referenced)</p>
+                        </div>
+                        
+                        <div class="gc-step">
+                            <h5>3. Sweep Phase</h5>
+                            <p>Any object <strong>not marked</strong> (unreachable) is considered "garbage" and eligible for collection</p>
+                        </div>
+                        
+                        <div class="gc-step">
+                            <h5>4. Compacting</h5>
+                            <p>GC compacts memory (removes gaps left by deleted objects), improving memory locality</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gc-circular-references">
+                    <h4>Handling Object Relationships & Circular References</h4>
+                    <div class="code-example">
+                        <pre><code>public class Order 
+{ 
+    public Invoice LinkedInvoice { get; set; } 
+}
+
+public class Invoice 
+{ 
+    public Order LinkedOrder { get; set; } 
+}
+
+// If both objects only reference each other, 
+// but nothing else references them from roots,
+// GC will collect BOTH objects automatically</code></pre>
+                    </div>
+                    <div class="example">
+                        <h4>Key Point:</h4>
+                        <p>If objects are <strong>only referencing each other</strong> but are not reachable from any root, the entire group is eligible for cleanup. .NET GC handles circular references automatically.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Generational Garbage Collection</h3>
+                <div class="gc-generations">
+                    <div class="generation">
+                        <h4>Generation 0 (Gen 0)</h4>
+                        <div class="gen-content">
+                            <p><strong>Newly created objects</strong> (short-lived)</p>
+                            <ul>
+                                <li>Temporary variables</li>
+                                <li>Request/response objects</li>
+                                <li>Method-scoped objects</li>
+                            </ul>
+                            <p><strong>Collection:</strong> Most frequent, fastest</p>
+                        </div>
+                    </div>
+                    
+                    <div class="generation">
+                        <h4>Generation 1 (Gen 1)</h4>
+                        <div class="gen-content">
+                            <p><strong>Objects surviving one collection</strong></p>
+                            <ul>
+                                <li>Medium-lived objects</li>
+                                <li>Objects that survived Gen 0 cleanup</li>
+                            </ul>
+                            <p><strong>Collection:</strong> Less frequent</p>
+                        </div>
+                    </div>
+                    
+                    <div class="generation">
+                        <h4>Generation 2 (Gen 2)</h4>
+                        <div class="gen-content">
+                            <p><strong>Long-lived objects</strong></p>
+                            <ul>
+                                <li>Singletons</li>
+                                <li>Application-wide caches</li>
+                                <li>Static objects</li>
+                            </ul>
+                            <p><strong>Collection:</strong> Least frequent, most expensive</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="gc-why-generational">
+                    <h4>Why Generational?</h4>
+                    <p><strong>Performance Optimization:</strong> Most objects die young (temporary objects). Focusing on Gen 0 first is faster and more efficient than scanning the entire heap every time.</p>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Memory Management Best Practices</h3>
+                
+                <div class="memory-practices">
+                    <div class="practice">
+                        <h4>❌ Avoid Manual GC.Collect()</h4>
+                        <p>Not recommended in enterprise apps unless you have a very specific performance reason. The GC is optimized to run automatically.</p>
+                    </div>
+                    
+                    <div class="practice">
+                        <h4>✅ Use IDisposable for Unmanaged Resources</h4>
+                        <div class="code-example">
+                            <pre><code>using (var fileStream = new FileStream("data.txt", FileMode.Open))
+{
+    // File handle is automatically disposed
+    // even if an exception occurs
+}
+
+// Or with using declarations (C# 8+)
+using var connection = new SqlConnection(connectionString);
+// Disposed at end of scope</code></pre>
+                        </div>
+                        <p><strong>Use for:</strong> File handles, database connections, network sockets—not for regular object memory.</p>
+                    </div>
+                    
+                    <div class="practice">
+                        <h4>✅ Remove References When Done</h4>
+                        <div class="code-example">
+                            <pre><code>// Instead of keeping large collections in memory
+private static List&lt;Order&gt; _processedOrders = new();
+
+// Clear when no longer needed
+public void CompleteProcessing()
+{
+    // Process orders...
+    _processedOrders.Clear(); // Allow GC to collect
+    _processedOrders = null;  // Remove reference entirely
+}</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="practice">
+                        <h4>⚠️ Watch for Memory Leaks</h4>
+                        <ul>
+                            <li><strong>Event handlers:</strong> Unsubscribe from events</li>
+                            <li><strong>Static collections:</strong> Clear when no longer needed</li>
+                            <li><strong>Caching:</strong> Implement cache expiration</li>
+                            <li><strong>Timers:</strong> Dispose properly</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Enterprise Memory Management Scenarios</h3>
+                
+                <div class="enterprise-scenarios">
+                    <div class="scenario">
+                        <h4>High-Traffic Web APIs</h4>
+                        <p>Request/response objects are automatically managed by GC. Focus on not holding references to request data beyond the request scope.</p>
+                    </div>
+                    
+                    <div class="scenario">
+                        <h4>Background Services</h4>
+                        <p>Long-running services should be careful about accumulating objects in static collections or event handlers that never get cleared.</p>
+                    </div>
+                    
+                    <div class="scenario">
+                        <h4>Data Processing Applications</h4>
+                        <p>When processing large datasets, process in chunks and allow intermediate objects to be collected between batches.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="interview-tips">
+                <h4>🎯 Interview-Ready Summary</h4>
+                <p>".NET's garbage collector periodically scans the managed heap for objects that are no longer reachable from application roots (like local variables, static fields, or threads). It works by marking all reachable objects, then collecting everything else—even if those unreachable objects reference each other. The process operates across the heap in generations, which makes memory management efficient and automatic for enterprise applications."</p>
             </div>
         </section>
 
