@@ -950,42 +950,949 @@ sc create "MyService" binpath="C:\MyApp\MyService.exe"</code></pre>
             <h2>Database & SQL Server</h2>
             
             <div class="concept-card">
-                <h3>Enterprise Database Concepts</h3>
+                <h3>SQL Server Fundamentals</h3>
                 
-                <div class="db-concept">
-                    <h4>Complex Queries & Joins</h4>
-                    <p>Healthcare EMR system example: joining patient, appointment, and treatment tables for comprehensive reports.</p>
+                <div class="sql-definition">
+                    <p><strong>SQL Server</strong> is a relational database management system (RDBMS) developed by Microsoft that stores, retrieves, and manages data for enterprise applications.</p>
                 </div>
 
-                <div class="db-concept">
-                    <h4>Transactions</h4>
-                    <p>ACID properties ensure data consistency in financial operations.</p>
+                <div class="sql-key-concepts">
+                    <h4>🗄️ Core Database Concepts</h4>
+                    
+                    <div class="concepts-grid">
+                        <div class="db-concept">
+                            <h6>🗃️ Database</h6>
+                            <p>Logical container for data (e.g., HRDB, ECommerceDB)</p>
+                        </div>
+                        <div class="db-concept">
+                            <h6>📊 Table</h6>
+                            <p>Collection of rows (records) and columns (fields)</p>
+                        </div>
+                        <div class="db-concept">
+                            <h6>📝 Row</h6>
+                            <p>Single record in a table</p>
+                        </div>
+                        <div class="db-concept">
+                            <h6>📋 Column</h6>
+                            <p>Field/attribute of the record</p>
+                        </div>
+                        <div class="db-concept">
+                            <h6>🔑 Primary Key</h6>
+                            <p>Unique identifier for each row</p>
+                        </div>
+                        <div class="db-concept">
+                            <h6>🔗 Foreign Key</h6>
+                            <p>Links rows between tables (referential integrity)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="crud-operations">
+                    <h4>🔄 CRUD Operations</h4>
+                    
+                    <div class="crud-grid">
+                        <div class="crud-operation create">
+                            <h5>Create (INSERT)</h5>
+                            <div class="code-example">
+                                <pre><code>INSERT INTO Employees (Name, Age, Department) 
+VALUES ('Rahul', 32, 'Engineering')</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="crud-operation read">
+                            <h5>Read (SELECT)</h5>
+                            <div class="code-example">
+                                <pre><code>SELECT Name, Age, Department 
+FROM Employees 
+WHERE Age > 30</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="crud-operation update">
+                            <h5>Update (UPDATE)</h5>
+                            <div class="code-example">
+                                <pre><code>UPDATE Employees 
+SET Age = 33 
+WHERE Name = 'Rahul'</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="crud-operation delete">
+                            <h5>Delete (DELETE)</h5>
+                            <div class="code-example">
+                                <pre><code>DELETE FROM Employees 
+WHERE Name = 'Rahul'</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sql-joins">
+                    <h4>🔗 SQL Joins</h4>
+                    
+                    <div class="joins-grid">
+                        <div class="join-type">
+                            <h5>INNER JOIN</h5>
+                            <p>Returns rows with matching values in both tables</p>
+                            <div class="code-example">
+                                <pre><code>SELECT e.Name, d.DepartmentName
+FROM Employees e
+INNER JOIN Departments d ON e.DepartmentId = d.Id</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="join-type">
+                            <h5>LEFT JOIN</h5>
+                            <p>All rows from left table + matching rows from right (null if no match)</p>
+                            <div class="code-example">
+                                <pre><code>SELECT e.Name, d.DepartmentName
+FROM Employees e
+LEFT JOIN Departments d ON e.DepartmentId = d.Id</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="join-type">
+                            <h5>RIGHT JOIN</h5>
+                            <p>All rows from right + matching rows from left</p>
+                            <div class="code-example">
+                                <pre><code>SELECT e.Name, d.DepartmentName
+FROM Employees e
+RIGHT JOIN Departments d ON e.DepartmentId = d.Id</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="join-type">
+                            <h5>FULL JOIN</h5>
+                            <p>All rows when there is a match in one of the tables</p>
+                            <div class="code-example">
+                                <pre><code>SELECT e.Name, d.DepartmentName
+FROM Employees e
+FULL JOIN Departments d ON e.DepartmentId = d.Id</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>ACID Properties</h3>
+                
+                <div class="acid-intro">
+                    <p>ACID properties ensure that database transactions are reliable and maintain data integrity in enterprise applications.</p>
+                </div>
+
+                <div class="acid-properties">
+                    <div class="acid-property atomicity">
+                        <h4>🔄 Atomicity</h4>
+                        <p><strong>Definition:</strong> A transaction is "all or nothing." Either every operation completes successfully, or none do.</p>
+                        
+                        <div class="acid-example">
+                            <h5>💰 Bank Transfer Example</h5>
+                            <div class="code-example">
+                                <pre><code>BEGIN TRANSACTION
+    UPDATE Accounts SET Balance = Balance - 10000 WHERE AccountId = 1
+    UPDATE Accounts SET Balance = Balance + 10000 WHERE AccountId = 2
+COMMIT TRANSACTION
+-- If anything fails, ROLLBACK happens, so both accounts are untouched.</code></pre>
+                            </div>
+                            <p><strong>Result:</strong> If deduction succeeds but addition fails, both steps are undone—no money is lost or duplicated.</p>
+                        </div>
+                    </div>
+
+                    <div class="acid-property consistency">
+                        <h4>✅ Consistency</h4>
+                        <p><strong>Definition:</strong> A transaction brings the database from one valid state to another, obeying all rules (constraints, triggers, cascades).</p>
+                        
+                        <div class="acid-example">
+                            <h5>🛡️ Constraint Enforcement</h5>
+                            <div class="code-example">
+                                <pre><code>ALTER TABLE Accounts
+ADD CONSTRAINT chk_balance_nonnegative CHECK (Balance >= 0)</code></pre>
+                            </div>
+                            <p><strong>Result:</strong> Any operation violating this constraint fails, maintaining consistency—no negative balances, no broken references.</p>
+                        </div>
+                    </div>
+
+                    <div class="acid-property isolation">
+                        <h4>🔒 Isolation</h4>
+                        <p><strong>Definition:</strong> Concurrent transactions do not interfere with each other. Each transaction executes as if it's the only one running.</p>
+                        
+                        <div class="isolation-levels">
+                            <h5>📊 Isolation Levels</h5>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Level</th>
+                                        <th>Dirty Reads</th>
+                                        <th>Non-repeatable Reads</th>
+                                        <th>Phantom Reads</th>
+                                        <th>Concurrency</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Read Uncommitted</td>
+                                        <td>Yes</td>
+                                        <td>Yes</td>
+                                        <td>Yes</td>
+                                        <td>Highest</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Read Committed</td>
+                                        <td>No</td>
+                                        <td>Yes</td>
+                                        <td>Yes</td>
+                                        <td>High</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Repeatable Read</td>
+                                        <td>No</td>
+                                        <td>No</td>
+                                        <td>Yes</td>
+                                        <td>Medium</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Serializable</td>
+                                        <td>No</td>
+                                        <td>No</td>
+                                        <td>No</td>
+                                        <td>Low</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Snapshot</td>
+                                        <td>No</td>
+                                        <td>No</td>
+                                        <td>No</td>
+                                        <td>High</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="acid-property durability">
+                        <h4>💾 Durability</h4>
+                        <p><strong>Definition:</strong> Once a transaction is committed, its changes are permanent—even if there's a system crash, power loss, or database restart.</p>
+                        
+                        <div class="acid-example">
+                            <h5>🔐 Transaction Log</h5>
+                            <p><strong>How it works:</strong> SQL Server writes all transaction logs to disk <strong>before</strong> acknowledging a commit. If the database restarts after a commit, it uses the transaction log to restore all committed transactions, guaranteeing no data loss.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="acid-summary-table">
+                    <h4>📋 ACID Summary</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Meaning</th>
+                                <th>Example Scenario</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Atomicity</td>
+                                <td>All or nothing</td>
+                                <td>Both debit & credit succeed, or neither</td>
+                            </tr>
+                            <tr>
+                                <td>Consistency</td>
+                                <td>Data moves from one valid state to another</td>
+                                <td>No negative balances, no broken FKs</td>
+                            </tr>
+                            <tr>
+                                <td>Isolation</td>
+                                <td>Transactions don't affect each other</td>
+                                <td>Concurrent transfers don't interfere</td>
+                            </tr>
+                            <tr>
+                                <td>Durability</td>
+                                <td>Once committed, changes are permanent</td>
+                                <td>Server crash doesn't lose money</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Indexing & Performance</h3>
+                
+                <div class="indexing-intro">
+                    <p><strong>Purpose:</strong> Indexes speed up SELECT queries (like an index in a book) by creating optimized data structures for fast lookups.</p>
+                </div>
+
+                <div class="index-types">
+                    <h4>📚 Index Types</h4>
+                    
+                    <div class="index-comparison">
+                        <div class="index-type clustered">
+                            <h5>🗂️ Clustered Index</h5>
+                            <ul>
+                                <li>Sorts the actual data rows physically</li>
+                                <li>Only <strong>1 per table</strong></li>
+                                <li>Usually on Primary Key</li>
+                                <li>Data pages are stored in order</li>
+                            </ul>
+                            <div class="code-example">
+                                <pre><code>CREATE CLUSTERED INDEX IX_Employee_Id 
+ON Employees (EmployeeId)</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="index-type nonclustered">
+                            <h5>📑 Non-Clustered Index</h5>
+                            <ul>
+                                <li>Separate structure pointing to data</li>
+                                <li><strong>Multiple allowed</strong> per table</li>
+                                <li>Contains key values + row locators</li>
+                                <li>Doesn't change physical data order</li>
+                            </ul>
+                            <div class="code-example">
+                                <pre><code>CREATE NONCLUSTERED INDEX IX_Employee_Name 
+ON Employees (LastName, FirstName)</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="index-usage">
+                    <h4>⚡ When to Use Indexes</h4>
+                    <div class="usage-scenarios">
+                        <div class="usage-scenario">
+                            <h5>✅ Good for Indexing</h5>
+                            <ul>
+                                <li>Columns often used in <code>WHERE</code> clauses</li>
+                                <li>Columns used in <code>JOIN</code> conditions</li>
+                                <li>Columns used in <code>ORDER BY</code></li>
+                                <li>Foreign key columns</li>
+                                <li>Columns with high selectivity</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="usage-scenario">
+                            <h5>❌ Avoid Indexing</h5>
+                            <ul>
+                                <li>Columns that change frequently</li>
+                                <li>Very small tables</li>
+                                <li>Columns with low selectivity</li>
+                                <li>Wide columns (use included columns instead)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Stored Procedures & Functions</h3>
+                
+                <div class="sp-definition">
+                    <p>Precompiled groups of SQL statements that provide performance, security, and maintainability benefits in enterprise applications.</p>
+                </div>
+
+                <div class="sp-compilation">
+                    <h4>⚙️ "Precompiled" Explained</h4>
+                    
+                    <div class="compilation-process">
+                        <div class="compilation-step">
+                            <h5>1️⃣ First Execution</h5>
+                            <p>SQL Server parses, compiles, and creates an <strong>execution plan</strong>, then caches it in memory.</p>
+                        </div>
+                        <div class="compilation-step">
+                            <h5>2️⃣ Subsequent Executions</h5>
+                            <p>SQL Server looks for the cached execution plan and <strong>reuses it</strong>—no need to recompile.</p>
+                        </div>
+                        <div class="compilation-step">
+                            <h5>3️⃣ Performance Benefit</h5>
+                            <p>Saves compilation time and improves consistency for repeated calls.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sp-vs-adhoc">
+                    <h4>📊 Stored Procedures vs Ad-hoc SQL</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Ad-hoc SQL</th>
+                                <th>Stored Procedure</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Compilation</td>
+                                <td>On every unique query</td>
+                                <td>First execution, then reused</td>
+                            </tr>
+                            <tr>
+                                <td>Plan cache</td>
+                                <td>Not always reused</td>
+                                <td>Frequently reused</td>
+                            </tr>
+                            <tr>
+                                <td>Performance</td>
+                                <td>Slower for repeated calls</td>
+                                <td>Faster for repeated calls</td>
+                            </tr>
+                            <tr>
+                                <td>Security</td>
+                                <td>SQL injection risk</td>
+                                <td>Better protection</td>
+                            </tr>
+                            <tr>
+                                <td>Maintainability</td>
+                                <td>Logic in application</td>
+                                <td>Centralized business logic</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="sp-example">
+                    <h4>📝 Enterprise Stored Procedure Example</h4>
                     <div class="code-example">
-                        <pre><code>using (var transaction = context.Database.BeginTransaction()) {
-    try {
-        // Debit from source account
-        sourceAccount.Balance -= amount;
-        // Credit to destination account
-        destAccount.Balance += amount;
-        
-        context.SaveChanges();
-        transaction.Commit();
-    } catch {
-        transaction.Rollback();
-        throw;
-    }
+                        <pre><code>CREATE PROCEDURE usp_GetEmployeesByDepartment
+    @DepartmentId INT,
+    @IsActive BIT = 1,
+    @PageNumber INT = 1,
+    @PageSize INT = 10
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @Offset INT = (@PageNumber - 1) * @PageSize;
+    
+    SELECT 
+        EmployeeId,
+        FirstName,
+        LastName,
+        Email,
+        HireDate,
+        Salary
+    FROM Employees 
+    WHERE DepartmentId = @DepartmentId 
+        AND IsActive = @IsActive
+    ORDER BY LastName, FirstName
+    OFFSET @Offset ROWS 
+    FETCH NEXT @PageSize ROWS ONLY;
+    
+    -- Return total count for pagination
+    SELECT COUNT(*) as TotalRecords
+    FROM Employees 
+    WHERE DepartmentId = @DepartmentId 
+        AND IsActive = @IsActive;
+END</code></pre>
+                    </div>
+                </div>
+
+                <div class="function-types">
+                    <h4>🔧 User Defined Functions</h4>
+                    
+                    <div class="function-comparison">
+                        <div class="function-type scalar">
+                            <h5>Scalar-Valued Function</h5>
+                            <p>Returns a single value</p>
+                            <div class="code-example">
+                                <pre><code>CREATE FUNCTION dbo.CalculateAge(@BirthDate DATE)
+RETURNS INT
+AS
+BEGIN
+    RETURN DATEDIFF(YEAR, @BirthDate, GETDATE())
+END
+
+-- Usage
+SELECT Name, dbo.CalculateAge(BirthDate) as Age 
+FROM Employees</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="function-type table">
+                            <h5>Table-Valued Function</h5>
+                            <p>Returns a result set (table)</p>
+                            <div class="code-example">
+                                <pre><code>CREATE FUNCTION dbo.GetEmployeesByDepartment(@DeptId INT)
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT EmployeeId, Name, Salary
+    FROM Employees
+    WHERE DepartmentId = @DeptId
+)
+
+-- Usage
+SELECT * FROM dbo.GetEmployeesByDepartment(5)</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Advanced SQL Concepts</h3>
+                
+                <div class="groupby-having">
+                    <h4>📊 GROUP BY & HAVING</h4>
+                    
+                    <div class="groupby-explanation">
+                        <div class="concept-explanation">
+                            <h5>GROUP BY</h5>
+                            <p><strong>Purpose:</strong> Groups rows that have the same values in specified columns into summary rows for aggregation.</p>
+                            <div class="code-example">
+                                <pre><code>SELECT ProductId, SUM(Amount) AS TotalSales
+FROM Sales
+GROUP BY ProductId</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="concept-explanation">
+                            <h5>HAVING</h5>
+                            <p><strong>Purpose:</strong> Filters groups <em>after</em> aggregation, based on aggregate function results.</p>
+                            <div class="code-example">
+                                <pre><code>SELECT ProductId, SUM(Amount) AS TotalSales
+FROM Sales
+GROUP BY ProductId
+HAVING SUM(Amount) > 10000</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="where-vs-having">
+                        <h5>📋 WHERE vs GROUP BY vs HAVING</h5>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>WHERE</th>
+                                    <th>GROUP BY</th>
+                                    <th>HAVING</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Purpose</td>
+                                    <td>Filter individual rows</td>
+                                    <td>Create groups for aggregation</td>
+                                    <td>Filter groups (after aggregation)</td>
+                                </tr>
+                                <tr>
+                                    <td>When Applied</td>
+                                    <td>Before grouping/aggregation</td>
+                                    <td>Groups rows</td>
+                                    <td>After grouping/aggregation</td>
+                                </tr>
+                                <tr>
+                                    <td>Can use aggregates?</td>
+                                    <td>❌ No</td>
+                                    <td>N/A</td>
+                                    <td>✅ Yes</td>
+                                </tr>
+                                <tr>
+                                    <td>Example</td>
+                                    <td><code>WHERE Amount > 100</code></td>
+                                    <td><code>GROUP BY ProductId</code></td>
+                                    <td><code>HAVING SUM(Amount) > 10000</code></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="enterprise-example">
+                        <h5>🏢 Enterprise Sales Dashboard Example</h5>
+                        <div class="code-example">
+                            <pre><code>SELECT 
+    ProductId, 
+    COUNT(*) as OrderCount,
+    SUM(Amount) AS TotalSales,
+    AVG(Amount) as AvgOrderValue
+FROM Sales
+WHERE SaleDate >= '2024-08-01' AND SaleDate < '2024-09-01'  -- Filter rows first
+GROUP BY ProductId                                           -- Group by product
+HAVING SUM(Amount) > 10000                                  -- Filter groups
+ORDER BY TotalSales DESC</code></pre>
+                        </div>
+                        <p><strong>Explanation:</strong> Shows products with total sales > ₹10,000 in August, ordered by highest sales first.</p>
+                    </div>
+                </div>
+
+                <div class="window-functions">
+                    <h4>🪟 Window Functions</h4>
+                    
+                    <div class="row-number-function">
+                        <h5>ROW_NUMBER()</h5>
+                        <p>Assigns a unique sequential integer to rows within a result set, based on the specified order.</p>
+                        
+                        <div class="row-number-examples">
+                            <div class="example-use-case">
+                                <h6>📄 Pagination</h6>
+                                <div class="code-example">
+                                    <pre><code>-- Get page 3 of employees, 10 per page
+DECLARE @PageNumber INT = 3, @PageSize INT = 10
+
+SELECT * FROM (
+    SELECT 
+        ROW_NUMBER() OVER (ORDER BY LastName, FirstName) AS RowNum,
+        EmployeeId, FirstName, LastName, Department
+    FROM Employees
+) AS PagedResults
+WHERE RowNum BETWEEN (@PageNumber - 1) * @PageSize + 1 
+                 AND @PageNumber * @PageSize</code></pre>
+                                </div>
+                            </div>
+                            
+                            <div class="example-use-case">
+                                <h6>🗑️ De-duplication</h6>
+                                <div class="code-example">
+                                    <pre><code>-- Remove duplicate users, keeping the latest record
+WITH DuplicateUsers AS (
+    SELECT *,
+           ROW_NUMBER() OVER (PARTITION BY Email ORDER BY CreatedOn DESC) AS rn
+    FROM Users
+)
+DELETE FROM DuplicateUsers WHERE rn > 1</code></pre>
+                                </div>
+                            </div>
+                            
+                            <div class="example-use-case">
+                                <h6>🏆 Ranking Within Groups</h6>
+                                <div class="code-example">
+                                    <pre><code>-- Find highest paid employee in each department
+SELECT * FROM (
+    SELECT *,
+           ROW_NUMBER() OVER (PARTITION BY DepartmentId ORDER BY Salary DESC) AS DeptRank
+    FROM Employees
+) AS RankedEmployees
+WHERE DeptRank = 1</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cte-concepts">
+                    <h4>🔗 Common Table Expressions (CTEs)</h4>
+                    
+                    <div class="cte-definition">
+                        <p>A CTE is a temporary, named result set defined within the execution scope of a single SQL statement using the <code>WITH</code> keyword.</p>
+                    </div>
+
+                    <div class="cte-benefits">
+                        <h5>💡 Why Use CTEs?</h5>
+                        <ul>
+                            <li><strong>Readability:</strong> Breaks down complex queries into manageable, logical steps</li>
+                            <li><strong>Reusability:</strong> Reference the CTE multiple times in the main query</li>
+                            <li><strong>Recursion:</strong> Enables elegant solutions to hierarchical problems</li>
+                        </ul>
+                    </div>
+
+                    <div class="cte-examples">
+                        <div class="cte-example simple">
+                            <h5>📝 Simple CTE Example</h5>
+                            <div class="code-example">
+                                <pre><code>-- Find high-earning recent hires
+WITH RecentHires AS (
+    SELECT EmployeeId, FirstName, LastName, Salary, HireDate
+    FROM Employees
+    WHERE HireDate >= DATEADD(year, -1, GETDATE())
+)
+SELECT * 
+FROM RecentHires 
+WHERE Salary > 100000
+ORDER BY Salary DESC</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="cte-example recursive">
+                            <h5>🌳 Recursive CTE Example</h5>
+                            <div class="code-example">
+                                <pre><code>-- Get all employees in a manager's hierarchy
+WITH OrgChart AS (
+    -- Anchor: Start with the top manager
+    SELECT EmployeeId, ManagerId, FirstName, LastName, 1 as Level
+    FROM Employees
+    WHERE ManagerId IS NULL
+    
+    UNION ALL
+    
+    -- Recursive: Get all subordinates
+    SELECT e.EmployeeId, e.ManagerId, e.FirstName, e.LastName, o.Level + 1
+    FROM Employees e
+    INNER JOIN OrgChart o ON e.ManagerId = o.EmployeeId
+)
+SELECT 
+    REPLICATE('  ', Level - 1) + FirstName + ' ' + LastName as HierarchyView,
+    Level
+FROM OrgChart
+ORDER BY Level, LastName</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pagination-concepts">
+                    <h4>📄 Modern Pagination (OFFSET-FETCH)</h4>
+                    
+                    <div class="pagination-syntax">
+                        <h5>🔧 SQL Server 2012+ Syntax</h5>
+                        <div class="code-example">
+                            <pre><code>SELECT columns
+FROM TableName
+ORDER BY SortColumn
+OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;</code></pre>
+                        </div>
+                        <p><strong>@Offset:</strong> How many rows to skip <code>(PageNumber - 1) * PageSize</code><br>
+                        <strong>@PageSize:</strong> Number of rows per page</p>
+                    </div>
+
+                    <div class="pagination-example">
+                        <h5>📋 Practical Example</h5>
+                        <div class="code-example">
+                            <pre><code>-- Get page 3 of employees, 10 per page
+DECLARE @PageNumber INT = 3
+DECLARE @PageSize INT = 10
+
+SELECT 
+    EmployeeId, 
+    FirstName, 
+    LastName, 
+    Department,
+    Salary
+FROM Employees
+ORDER BY LastName, FirstName
+OFFSET (@PageNumber - 1) * @PageSize ROWS 
+FETCH NEXT @PageSize ROWS ONLY</code></pre>
+                        </div>
+                        <p><strong>This skips the first 20 rows</strong> <code>((3-1)*10 = 20)</code> and returns the next 10.</p>
+                    </div>
+                </div>
+
+                <div class="temp-tables-variables">
+                    <h4>🗃️ Temporary Storage</h4>
+                    
+                    <div class="temp-storage-comparison">
+                        <div class="temp-table">
+                            <h5>#TempTable</h5>
+                            <p><strong>Definition:</strong> A real, physical table created in the tempdb system database.</p>
+                            
+                            <div class="code-example">
+                                <pre><code>CREATE TABLE #TempEmployees (
+    Id INT, 
+    Name NVARCHAR(100),
+    Department NVARCHAR(50)
+)
+
+INSERT INTO #TempEmployees VALUES (1, 'Rahul', 'Engineering')
+SELECT * FROM #TempEmployees
+
+DROP TABLE #TempEmployees</code></pre>
+                            </div>
+
+                            <div class="features">
+                                <h6>✅ Features</h6>
+                                <ul>
+                                    <li>Can have indexes, constraints</li>
+                                    <li>Can be altered after creation</li>
+                                    <li>Supports parallelism and statistics</li>
+                                    <li>Session-scoped (visible to nested procedures)</li>
+                                    <li>Good for large datasets and complex operations</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="table-variable">
+                            <h5>@TableVariable</h5>
+                            <p><strong>Definition:</strong> A variable declared and managed in memory, optimized for short-lived, small datasets.</p>
+                            
+                            <div class="code-example">
+                                <pre><code>DECLARE @Employees TABLE (
+    Id INT, 
+    Name NVARCHAR(100),
+    Department NVARCHAR(50)
+)
+
+INSERT INTO @Employees VALUES (1, 'Rahul', 'Engineering')
+SELECT * FROM @Employees</code></pre>
+                            </div>
+
+                            <div class="features">
+                                <h6>⚡ Features</h6>
+                                <ul>
+                                    <li>Limited indexing support</li>
+                                    <li>Cannot be altered after creation</li>
+                                    <li>Batch/procedure scoped only</li>
+                                    <li>Limited statistics (optimizer estimates 1 row)</li>
+                                    <li>Good for small, short-lived datasets</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="temp-storage-table">
+                        <h5>📊 Comparison Table</h5>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Temp Table (#TempTable)</th>
+                                    <th>Table Variable (@TableVar)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Storage</td>
+                                    <td>tempdb (physical table)</td>
+                                    <td>tempdb (optimized metadata)</td>
+                                </tr>
+                                <tr>
+                                    <td>Scope</td>
+                                    <td>Session/procedure/nested procs</td>
+                                    <td>Batch/procedure/function only</td>
+                                </tr>
+                                <tr>
+                                    <td>Indexes</td>
+                                    <td>Fully supported</td>
+                                    <td>Limited (improved in SQL 2016+)</td>
+                                </tr>
+                                <tr>
+                                    <td>Statistics</td>
+                                    <td>Yes (helps optimizer)</td>
+                                    <td>Minimal (row count often "1")</td>
+                                </tr>
+                                <tr>
+                                    <td>Parallelism</td>
+                                    <td>Yes</td>
+                                    <td>No</td>
+                                </tr>
+                                <tr>
+                                    <td>Best for</td>
+                                    <td>Large/intermediate result sets</td>
+                                    <td>Small, short-lived datasets</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="dynamic-sql">
+                    <h4>🔄 Dynamic SQL</h4>
+                    
+                    <div class="dynamic-sql-definition">
+                        <p><strong>Definition:</strong> A dynamic query is an SQL statement built and executed at runtime, rather than being hardcoded and static.</p>
+                    </div>
+
+                    <div class="dynamic-sql-why">
+                        <h5>🤔 Why Use Dynamic SQL?</h5>
+                        <ul>
+                            <li>Table or column names depend on user input</li>
+                            <li>Search/filter forms with optional criteria</li>
+                            <li>Pivoting/aggregation on dynamic columns</li>
+                            <li>Database maintenance scripts</li>
+                        </ul>
+                    </div>
+
+                    <div class="dynamic-sql-example">
+                        <h5>🔍 Dynamic Search Example</h5>
+                        <div class="code-example">
+                            <pre><code>CREATE PROCEDURE usp_SearchEmployees
+    @Name NVARCHAR(50) = NULL,
+    @Department NVARCHAR(50) = NULL,
+    @IsActive BIT = NULL
+AS
+BEGIN
+    DECLARE @SQL NVARCHAR(MAX) = 'SELECT * FROM Employees WHERE 1=1'
+    
+    IF @Name IS NOT NULL
+        SET @SQL += ' AND FirstName LIKE @Name'
+    
+    IF @Department IS NOT NULL
+        SET @SQL += ' AND Department = @Department'
+    
+    IF @IsActive IS NOT NULL
+        SET @SQL += ' AND IsActive = @IsActive'
+    
+    -- Use sp_executesql for parameterization (prevents SQL injection)
+    EXEC sp_executesql @SQL, 
+        N'@Name NVARCHAR(50), @Department NVARCHAR(50), @IsActive BIT', 
+        @Name, @Department, @IsActive
+END</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="dynamic-sql-best-practices">
+                        <h5>🛡️ Security Best Practices</h5>
+                        <div class="best-practices-grid">
+                            <div class="good-practice">
+                                <h6>✅ Do This</h6>
+                                <ul>
+                                    <li>Always use parameters with <code>sp_executesql</code></li>
+                                    <li>Use <code>QUOTENAME()</code> for table/column names</li>
+                                    <li>Validate input parameters</li>
+                                    <li>Use whitelisting for dynamic object names</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bad-practice">
+                                <h6>❌ Avoid This</h6>
+                                <ul>
+                                    <li>String concatenation with user input</li>
+                                    <li>Using dynamic SQL when static will work</li>
+                                    <li>Ignoring SQL injection risks</li>
+                                    <li>Building complex logic in dynamic strings</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dynamic-sql-pros-cons">
+                        <h5>⚖️ Pros & Cons</h5>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Pros</th>
+                                    <th>Cons</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Flexible, handles dynamic logic</td>
+                                    <td>Risk of SQL Injection if not parameterized</td>
+                                </tr>
+                                <tr>
+                                    <td>Useful for meta-programming</td>
+                                    <td>Harder to maintain and debug</td>
+                                </tr>
+                                <tr>
+                                    <td>Enables "search everywhere" forms</td>
+                                    <td>Can hurt performance/plan cache</td>
+                                </tr>
+                                <tr>
+                                    <td>Required for some admin tasks</td>
+                                    <td>Less readable than static SQL</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Entity Framework Core</h3>
+                <div class="ef-content">
+                    <h4>Code First Approach</h4>
+                    <div class="code-example">
+                        <pre><code>public class BlogContext : DbContext {
+    public DbSet&lt;Blog&gt; Blogs { get; set; }
+    public DbSet&lt;Post&gt; Posts { get; set; }
 }</code></pre>
                     </div>
                 </div>
 
-                <div class="db-concept">
-                    <h4>Entity Framework</h4>
-                    <p>ORM for mapping database tables to C# classes, simplifying CRUD operations.</p>
-                    <ul>
-                        <li>Code-First: Define models, generate database</li>
-                        <li>Database-First: Generate models from existing database</li>
-                        <li>Migrations: Version control for database schema</li>
-                    </ul>
+                <div class="interview-tips">
+                    <h4>🎯 SQL Server Interview-Ready Summary</h4>
+                    <p>"SQL Server is the backbone of most enterprise .NET applications. I use tables, indexing, stored procedures, and transactions to ensure data integrity and performance. I'm comfortable with ACID properties for reliable transactions, tuning queries with execution plans, designing normalized schemas, using advanced features like CTEs and window functions, and handling large data volumes with proper pagination and bulk operations. I also work closely with ORMs like Entity Framework and know when to drop down to raw SQL or stored procedures for optimization, always following security best practices to prevent SQL injection."</p>
                 </div>
             </div>
         </section>
@@ -2860,6 +3767,432 @@ public async Task&lt;Result&lt;Customer&gt;&gt; GetCustomerAsync(int id)
                 <div class="interview-tips">
                     <h4>🎯 Interview-Ready Summary</h4>
                     <p>"Generics in C# let us define classes, interfaces, and methods with type parameters, enabling the same code to work with different data types while maintaining type safety and performance. They eliminate code duplication, prevent runtime errors through compile-time checking, and avoid boxing/unboxing overhead. I use generics extensively in enterprise projects for repository patterns, utility functions, event handling, and strongly-typed collections. Advanced features like constraints allow enforcing type requirements, while covariance and contravariance provide flexibility in type assignments for interfaces and delegates."</p>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>ASP.NET Core Middleware</h3>
+                
+                <div class="middleware-definition">
+                    <p><strong>Definition:</strong> Middleware is a component that processes HTTP requests and responses as they flow through the ASP.NET Core pipeline.</p>
+                    <div class="middleware-core-concept">
+                        <h5>🔗 Core Concept</h5>
+                        <p>Each middleware can <strong>inspect/modify requests</strong> before they reach controllers, <strong>inspect/modify responses</strong> after they leave controllers, and <strong>decide whether to pass control</strong> to the next middleware in the pipeline.</p>
+                    </div>
+                </div>
+
+                <div class="middleware-capabilities">
+                    <h4>🛠️ What Middleware Can Do</h4>
+                    
+                    <div class="capabilities-grid">
+                        <div class="capability">
+                            <h6>📥 Request Processing</h6>
+                            <p>Inspect and modify incoming HTTP requests</p>
+                            <ul>
+                                <li>Add/modify headers</li>
+                                <li>Validate request format</li>
+                                <li>Extract authentication tokens</li>
+                                <li>Log request details</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="capability">
+                            <h6>📤 Response Processing</h6>
+                            <p>Inspect and modify outgoing HTTP responses</p>
+                            <ul>
+                                <li>Add security headers</li>
+                                <li>Compress response content</li>
+                                <li>Log response metrics</li>
+                                <li>Transform response format</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="capability">
+                            <h6>🔀 Pipeline Control</h6>
+                            <p>Control the flow through the pipeline</p>
+                            <ul>
+                                <li>Short-circuit requests</li>
+                                <li>Conditionally call next middleware</li>
+                                <li>Handle exceptions globally</li>
+                                <li>Implement branching logic</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="middleware-examples">
+                    <h4>🌟 Common Middleware Examples</h4>
+                    
+                    <div class="examples-grid">
+                        <div class="middleware-example">
+                            <h6>🔐 Authentication & Authorization</h6>
+                            <p>Verify user identity and permissions</p>
+                        </div>
+                        <div class="middleware-example">
+                            <h6>📝 Logging</h6>
+                            <p>Record request/response information</p>
+                        </div>
+                        <div class="middleware-example">
+                            <h6>⚠️ Exception Handling</h6>
+                            <p>Global error handlers and recovery</p>
+                        </div>
+                        <div class="middleware-example">
+                            <h6>🌐 CORS</h6>
+                            <p>Cross-Origin Resource Sharing policies</p>
+                        </div>
+                        <div class="middleware-example">
+                            <h6>🗜️ Compression</h6>
+                            <p>Compress response content for performance</p>
+                        </div>
+                        <div class="middleware-example">
+                            <h6>🔄 Request/Response Rewriting</h6>
+                            <p>Transform URLs or content on the fly</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="delegate-architecture">
+                    <h4>🔗 Delegate Architecture</h4>
+                    
+                    <div class="delegate-explanation">
+                        <div class="key-concept">
+                            <h5>💡 Key Concept</h5>
+                            <p><strong>Yes, every middleware in ASP.NET Core is built around delegates!</strong></p>
+                            <p>The pipeline is a <strong>chain of delegates</strong> (methods), each representing a middleware component.</p>
+                        </div>
+                        
+                        <div class="delegate-flow">
+                            <h5>🔄 How Delegate Chain Works</h5>
+                            <div class="flow-steps">
+                                <div class="flow-step">
+                                    <span class="step-number">1</span>
+                                    <div class="step-content">
+                                        <h6>Receive Context</h6>
+                                        <p>Middleware receives <code>HttpContext</code> and reference to next delegate</p>
+                                    </div>
+                                </div>
+                                <div class="flow-arrow">→</div>
+                                <div class="flow-step">
+                                    <span class="step-number">2</span>
+                                    <div class="step-content">
+                                        <h6>Execute Logic</h6>
+                                        <p>Run custom logic (logging, validation, etc.)</p>
+                                    </div>
+                                </div>
+                                <div class="flow-arrow">→</div>
+                                <div class="flow-step">
+                                    <span class="step-number">3</span>
+                                    <div class="step-content">
+                                        <h6>Call Next</h6>
+                                        <p>Optionally call <code>await next(context)</code></p>
+                                    </div>
+                                </div>
+                                <div class="flow-arrow">→</div>
+                                <div class="flow-step">
+                                    <span class="step-number">4</span>
+                                    <div class="step-content">
+                                        <h6>Post-Processing</h6>
+                                        <p>Execute logic after next middleware completes</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="custom-middleware-example">
+                    <h4>🏗️ Custom Middleware Implementation</h4>
+                    
+                    <div class="middleware-code-example">
+                        <h5>📝 Logging Middleware Example</h5>
+                        <div class="code-example">
+                            <pre><code>public class RequestLoggingMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly ILogger&lt;RequestLoggingMiddleware&gt; _logger;
+
+    public RequestLoggingMiddleware(RequestDelegate next, ILogger&lt;RequestLoggingMiddleware&gt; logger)
+    {
+        _next = next; // Delegate to next middleware
+        _logger = logger;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        // Before processing - log incoming request
+        var stopwatch = Stopwatch.StartNew();
+        _logger.LogInformation("Request {Method} {Path} started at {Time}",
+            context.Request.Method,
+            context.Request.Path,
+            DateTime.UtcNow);
+
+        try
+        {
+            // Call next middleware in the pipeline
+            await _next(context);
+        }
+        finally
+        {
+            // After processing - log response
+            stopwatch.Stop();
+            _logger.LogInformation("Request {Method} {Path} completed in {Duration}ms with status {StatusCode}",
+                context.Request.Method,
+                context.Request.Path,
+                stopwatch.ElapsedMilliseconds,
+                context.Response.StatusCode);
+        }
+    }
+}</code></pre>
+                        </div>
+                        
+                        <div class="code-explanation">
+                            <h6>🔍 Key Points</h6>
+                            <ul>
+                                <li><strong>RequestDelegate _next</strong>: The delegate pointing to next middleware</li>
+                                <li><strong>InvokeAsync method</strong>: Entry point called by the pipeline</li>
+                                <li><strong>await _next(context)</strong>: Passes control to next middleware</li>
+                                <li><strong>Before/After logic</strong>: Code runs before and after the next middleware</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="middleware-registration">
+                    <h4>📋 Middleware Registration</h4>
+                    <p>Middlewares are registered in <strong>execution order</strong> in Program.cs or Startup.cs</p>
+                    
+                    <div class="registration-example">
+                        <h5>🔧 Registration Order Example</h5>
+                        <div class="code-example">
+                            <pre><code>var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+// Middleware registration order is CRITICAL!
+app.UseMiddleware&lt;RequestLoggingMiddleware&gt;();        // 1. First - logs all requests
+app.UseMiddleware&lt;ExceptionHandlingMiddleware&gt;();    // 2. Catches any exceptions
+app.UseHttpsRedirection();                          // 3. HTTPS redirect
+app.UseAuthentication();                            // 4. Authentication
+app.UseAuthorization();                             // 5. Authorization
+app.UseCors();                                      // 6. CORS policies
+app.UseRouting();                                   // 7. Route matching
+app.UseEndpoints(endpoints =>                       // 8. Final endpoints
+{
+    endpoints.MapControllers();
+    endpoints.MapGet("/health", () => "Healthy");
+});
+
+app.Run();</code></pre>
+                        </div>
+                        
+                        <div class="order-importance">
+                            <h6>⚠️ Order Matters!</h6>
+                            <p>The order of middleware registration determines the execution sequence. Authentication must come before authorization, logging should be early to catch all requests, etc.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="advanced-middleware-patterns">
+                    <h4>🚀 Advanced Middleware Patterns</h4>
+                    
+                    <div class="patterns-grid">
+                        <div class="pattern">
+                            <h5>🔄 Short-Circuit Middleware</h5>
+                            <div class="code-example">
+                                <pre><code>public class ApiKeyMiddleware
+{
+    private readonly RequestDelegate _next;
+    
+    public async Task InvokeAsync(HttpContext context)
+    {
+        if (!context.Request.Headers.ContainsKey("X-API-Key"))
+        {
+            context.Response.StatusCode = 401;
+            await context.Response.WriteAsync("API Key required");
+            return; // Short-circuit - don't call next middleware
+        }
+        
+        await _next(context); // Continue pipeline
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="pattern">
+                            <h5>🌿 Conditional Middleware</h5>
+                            <div class="code-example">
+                                <pre><code>public class DevelopmentOnlyMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly IWebHostEnvironment _env;
+    
+    public async Task InvokeAsync(HttpContext context)
+    {
+        if (_env.IsDevelopment())
+        {
+            // Add development headers
+            context.Response.Headers.Add("X-Dev-Mode", "true");
+        }
+        
+        await _next(context);
+    }
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="pattern">
+                            <h5>📊 Metrics Middleware</h5>
+                            <div class="code-example">
+                                <pre><code>public class MetricsMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly IMetrics _metrics;
+    
+    public async Task InvokeAsync(HttpContext context)
+    {
+        using var timer = _metrics.StartTimer("request_duration");
+        
+        await _next(context);
+        
+        _metrics.IncrementCounter("requests_total", 
+            ("method", context.Request.Method),
+            ("status", context.Response.StatusCode.ToString()));
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="middleware-truth-table">
+                    <h4>✅ Middleware Truth Table</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Statement</th>
+                                <th>True/False</th>
+                                <th>Explanation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Every middleware is a delegate</td>
+                                <td>✅ True</td>
+                                <td>All middleware is implemented as a delegate or method</td>
+                            </tr>
+                            <tr>
+                                <td>Middleware must call the next delegate</td>
+                                <td>❌ False</td>
+                                <td>Can short-circuit (e.g., return 401 Unauthorized early)</td>
+                            </tr>
+                            <tr>
+                                <td>Middleware only runs before controllers</td>
+                                <td>❌ False</td>
+                                <td>Can run logic before AND after controllers/endpoints</td>
+                            </tr>
+                            <tr>
+                                <td>Order of registration matters</td>
+                                <td>✅ True</td>
+                                <td>Execution order follows registration order</td>
+                            </tr>
+                            <tr>
+                                <td>Middleware can modify HttpContext</td>
+                                <td>✅ True</td>
+                                <td>Full access to request/response objects</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="enterprise-middleware-examples">
+                    <h4>🏢 Enterprise Middleware Examples</h4>
+                    
+                    <div class="enterprise-patterns">
+                        <div class="enterprise-pattern">
+                            <h5>🔒 JWT Authentication Middleware</h5>
+                            <div class="code-example">
+                                <pre><code>public class JwtAuthenticationMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly JwtService _jwtService;
+    
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var token = context.Request.Headers["Authorization"]
+            .FirstOrDefault()?.Split(" ").Last();
+            
+        if (token != null)
+        {
+            var principal = _jwtService.ValidateToken(token);
+            if (principal != null)
+            {
+                context.User = principal;
+            }
+        }
+        
+        await _next(context);
+    }
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="enterprise-pattern">
+                            <h5>📈 Performance Monitoring</h5>
+                            <div class="code-example">
+                                <pre><code>public class PerformanceMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly ILogger _logger;
+    
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var stopwatch = Stopwatch.StartNew();
+        
+        await _next(context);
+        
+        stopwatch.Stop();
+        var elapsed = stopwatch.ElapsedMilliseconds;
+        
+        if (elapsed > 1000) // Log slow requests
+        {
+            _logger.LogWarning("Slow request: {Method} {Path} took {Duration}ms",
+                context.Request.Method, context.Request.Path, elapsed);
+        }
+        
+        context.Response.Headers.Add("X-Response-Time", elapsed.ToString());
+    }
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="enterprise-pattern">
+                            <h5>🛡️ Security Headers Middleware</h5>
+                            <div class="code-example">
+                                <pre><code>public class SecurityHeadersMiddleware
+{
+    private readonly RequestDelegate _next;
+    
+    public async Task InvokeAsync(HttpContext context)
+    {
+        await _next(context);
+        
+        // Add security headers to response
+        context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+        context.Response.Headers.Add("X-Frame-Options", "DENY");
+        context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
+        context.Response.Headers.Add("Strict-Transport-Security", 
+            "max-age=31536000; includeSubDomains");
+        context.Response.Headers.Add("Content-Security-Policy", 
+            "default-src 'self'");
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interview-tips">
+                    <h4>🎯 Interview-Ready Summary</h4>
+                    <p>"Middleware in ASP.NET Core is a component that intercepts HTTP requests and responses in the processing pipeline. Under the hood, every middleware is structured as a delegate that can execute logic and then call the next middleware's delegate. This design allows you to build modular, ordered chains for cross-cutting concerns like logging, authentication, and error handling. The order of middleware registration is critical as it determines the execution sequence, and middleware can short-circuit the pipeline or run logic both before and after the next component."</p>
                 </div>
             </div>
 
