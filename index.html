@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>.NET Full Stack Interview Prep</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>.NET Full Stack Interview Preparation</h1>
+            <p>Senior Software Engineer Interview Guide</p>
+        </div>
+    </header>
+
+    <nav class="main-nav">
+        <div class="container">
+            <ul>
+                <li><a href="#oop-concepts">OOP Concepts</a></li>
+                <li><a href="#dotnet-fundamentals">.NET Fundamentals</a></li>
+                <li><a href="#aspnet-webapi">ASP.NET & Web API</a></li>
+                <li><a href="#database-sql">Database & SQL</a></li>
+                <li><a href="#enterprise-architecture">Enterprise Architecture</a></li>
+                <li><a href="#cloud-azure">Cloud & Azure</a></li>
+                <li><a href="#advanced-concepts">Advanced Concepts</a></li>
+                <li><a href="#best-practices">Best Practices</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section id="oop-concepts" class="topic-section">
+            <h2>Core OOP Concepts</h2>
+            
+            <div class="concept-card">
+                <h3>Classes and Objects</h3>
+                <div class="concept-content">
+                    <p><strong>Class:</strong> A blueprint for creating objects. Think of it as a template in enterprise systems.</p>
+                    <p><strong>Object:</strong> An instance of a class with actual data.</p>
+                    <div class="example">
+                        <h4>Enterprise Example:</h4>
+                        <p>In an HRMS system, <code>Employee</code> is a class defining properties like Name, EmployeeID, and methods like CalculateSalary(). Each actual employee record is an object of this class.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>The Four Pillars of OOP</h3>
+                
+                <div class="pillar">
+                    <h4>1. Encapsulation</h4>
+                    <p>Bundling data and methods together while restricting access to internal components.</p>
+                    <div class="code-example">
+                        <pre><code>public class Account {
+    private decimal balance;
+    public void Deposit(decimal amount) { balance += amount; }
+    public bool Withdraw(decimal amount) {
+        if(amount > balance) return false;
+        balance -= amount;
+        return true;
+    }
+}</code></pre>
+                    </div>
+                    <p><strong>Why:</strong> Prevents unauthorized updates and ensures business rules are enforced.</p>
+                </div>
+
+                <div class="pillar">
+                    <h4>2. Inheritance</h4>
+                    <p>Creating new classes based on existing ones, inheriting properties and behaviors.</p>
+                    <div class="code-example">
+                        <pre><code>public class User {
+    public string UserName { get; set; }
+    public virtual void Login() { /* generic logic */ }
+}
+public class AdminUser : User {
+    public override void Login() { /* admin-specific logic */ }
+    public void ApproveUser() { /* only admin */ }
+}</code></pre>
+                    </div>
+                    <p><strong>Enterprise Use:</strong> Multi-tenant SaaS with different user roles and privileges.</p>
+                </div>
+
+                <div class="pillar">
+                    <h4>3. Polymorphism</h4>
+                    <p>One interface, multiple implementations. Enables flexible, extensible code.</p>
+                    <div class="polymorphism-types">
+                        <h5>Compile-time (Method Overloading)</h5>
+                        <div class="code-example">
+                            <pre><code>public class DocumentGenerator {
+    public void Generate(int templateId) { /* ... */ }
+    public void Generate(string templateName) { /* ... */ }
+    public void Generate(string title, string body) { /* ... */ }
+}</code></pre>
+                        </div>
+                        
+                        <h5>Runtime (Method Overriding)</h5>
+                        <div class="code-example">
+                            <pre><code>public interface IReportExporter {
+    void Export(Report data);
+}
+public class PdfExporter : IReportExporter { ... }
+public class ExcelExporter : IReportExporter { ... }</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pillar">
+                    <h4>4. Abstraction</h4>
+                    <p>Hiding complex implementation details, showing only necessary features.</p>
+                    <div class="code-example">
+                        <pre><code>public interface IPaymentGateway {
+    PaymentResult ProcessPayment(PaymentRequest request);
+}
+public class StripeGateway : IPaymentGateway { ... }
+public class PaypalGateway : IPaymentGateway { ... }</code></pre>
+                    </div>
+                    <p><strong>Benefit:</strong> Swap payment providers with minimal code changes.</p>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>SOLID Principles</h3>
+                <div class="solid-principles">
+                    <div class="principle">
+                        <h4>S - Single Responsibility</h4>
+                        <p>Each class should have only one reason to change.</p>
+                        <p><strong>Example:</strong> OrderManager, OrderRepository, OrderEmailNotifier - separate responsibilities.</p>
+                    </div>
+                    <div class="principle">
+                        <h4>O - Open/Closed</h4>
+                        <p>Open for extension, closed for modification.</p>
+                        <p><strong>Example:</strong> Add new salary calculation by creating new class, not modifying existing one.</p>
+                    </div>
+                    <div class="principle">
+                        <h4>L - Liskov Substitution</h4>
+                        <p>Derived classes should be substitutable for base classes.</p>
+                        <p><strong>Example:</strong> AdminUser should work wherever User is expected.</p>
+                    </div>
+                    <div class="principle">
+                        <h4>I - Interface Segregation</h4>
+                        <p>No client should depend on methods it doesn't use.</p>
+                        <p><strong>Example:</strong> Split large IUser into ILogin, IRegister, IProfile.</p>
+                    </div>
+                    <div class="principle">
+                        <h4>D - Dependency Inversion</h4>
+                        <p>Depend on abstractions, not concretions.</p>
+                        <p><strong>Example:</strong> Controllers receive IUserService, not concrete UserService.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="dotnet-fundamentals" class="topic-section">
+            <h2>.NET Framework & .NET Core Fundamentals</h2>
+            
+            <div class="concept-card">
+                <h3>Framework vs Core/.NET 5+</h3>
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aspect</th>
+                                <th>.NET Framework</th>
+                                <th>.NET Core/.NET 5+</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Platform</td>
+                                <td>Windows only</td>
+                                <td>Cross-platform</td>
+                            </tr>
+                            <tr>
+                                <td>Deployment</td>
+                                <td>Machine-wide installation</td>
+                                <td>Side-by-side, self-contained</td>
+                            </tr>
+                            <tr>
+                                <td>Performance</td>
+                                <td>Good</td>
+                                <td>Better, optimized</td>
+                            </tr>
+                            <tr>
+                                <td>Use Case</td>
+                                <td>Legacy Windows apps</td>
+                                <td>Cloud, microservices, modern apps</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="example">
+                    <h4>Real-World Migration:</h4>
+                    <p>Enterprise modernization: migrating legacy ASP.NET apps to .NET Core for Azure deployment and better scalability.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="aspnet-webapi" class="topic-section">
+            <h2>ASP.NET & Web API</h2>
+            
+            <div class="concept-card">
+                <h3>Key Components</h3>
+                
+                <div class="component">
+                    <h4>Controllers</h4>
+                    <p>Entry points for web APIs, handle HTTP requests and return responses.</p>
+                    <div class="code-example">
+                        <pre><code>[ApiController]
+[Route("api/[controller]")]
+public class ProductsController : ControllerBase {
+    [HttpGet]
+    public IActionResult GetProducts() { ... }
+    
+    [HttpPost]
+    public IActionResult CreateProduct(Product product) { ... }
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="component">
+                    <h4>Middleware</h4>
+                    <p>Components that handle requests in the pipeline - authentication, logging, error handling.</p>
+                    <div class="example">
+                        <p><strong>Banking App Example:</strong> JWT middleware authenticates every API request before reaching controllers.</p>
+                    </div>
+                </div>
+
+                <div class="component">
+                    <h4>Dependency Injection</h4>
+                    <p>Built-in DI container for managing service lifetimes and dependencies.</p>
+                    <div class="code-example">
+                        <pre><code>// Startup.cs
+services.AddScoped&lt;IUserService, UserService&gt;();
+
+// Controller
+public class UsersController : ControllerBase {
+    private readonly IUserService _userService;
+    public UsersController(IUserService userService) {
+        _userService = userService;
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="database-sql" class="topic-section">
+            <h2>Database & SQL Server</h2>
+            
+            <div class="concept-card">
+                <h3>Enterprise Database Concepts</h3>
+                
+                <div class="db-concept">
+                    <h4>Complex Queries & Joins</h4>
+                    <p>Healthcare EMR system example: joining patient, appointment, and treatment tables for comprehensive reports.</p>
+                </div>
+
+                <div class="db-concept">
+                    <h4>Transactions</h4>
+                    <p>ACID properties ensure data consistency in financial operations.</p>
+                    <div class="code-example">
+                        <pre><code>using (var transaction = context.Database.BeginTransaction()) {
+    try {
+        // Debit from source account
+        sourceAccount.Balance -= amount;
+        // Credit to destination account
+        destAccount.Balance += amount;
+        
+        context.SaveChanges();
+        transaction.Commit();
+    } catch {
+        transaction.Rollback();
+        throw;
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="db-concept">
+                    <h4>Entity Framework</h4>
+                    <p>ORM for mapping database tables to C# classes, simplifying CRUD operations.</p>
+                    <ul>
+                        <li>Code-First: Define models, generate database</li>
+                        <li>Database-First: Generate models from existing database</li>
+                        <li>Migrations: Version control for database schema</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="enterprise-architecture" class="topic-section">
+            <h2>Enterprise Application Architecture</h2>
+            
+            <div class="concept-card">
+                <h3>Layered Architecture</h3>
+                <div class="architecture-layers">
+                    <div class="layer">
+                        <h4>Presentation Layer</h4>
+                        <p>Controllers, Views, API endpoints</p>
+                    </div>
+                    <div class="layer">
+                        <h4>Business Logic Layer</h4>
+                        <p>Services, business rules, validation</p>
+                    </div>
+                    <div class="layer">
+                        <h4>Data Access Layer</h4>
+                        <p>Repositories, Entity Framework, database operations</p>
+                    </div>
+                    <div class="layer">
+                        <h4>Database Layer</h4>
+                        <p>SQL Server, stored procedures, data storage</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Integration Patterns</h3>
+                <ul class="integration-list">
+                    <li><strong>APIs:</strong> REST/GraphQL for system communication</li>
+                    <li><strong>Message Queues:</strong> Azure Service Bus for async processing</li>
+                    <li><strong>ETL Jobs:</strong> Data transformation between systems</li>
+                    <li><strong>Event-Driven:</strong> Microservices communication</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="cloud-azure" class="topic-section">
+            <h2>Cloud (Azure) & Modernization</h2>
+            
+            <div class="concept-card">
+                <h3>Azure Services for .NET</h3>
+                <div class="azure-services">
+                    <div class="service">
+                        <h4>Azure App Service</h4>
+                        <p>Host web applications and APIs with auto-scaling</p>
+                    </div>
+                    <div class="service">
+                        <h4>Azure SQL Database</h4>
+                        <p>Managed SQL Server in the cloud</p>
+                    </div>
+                    <div class="service">
+                        <h4>Azure Functions</h4>
+                        <p>Serverless computing for scheduled tasks</p>
+                    </div>
+                    <div class="service">
+                        <h4>Azure Service Bus</h4>
+                        <p>Message queuing for decoupled systems</p>
+                    </div>
+                    <div class="service">
+                        <h4>Azure Active Directory</h4>
+                        <p>Identity and access management</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Migration Strategies</h3>
+                <ul>
+                    <li><strong>Lift and Shift:</strong> Move existing apps to cloud VMs</li>
+                    <li><strong>Re-platform:</strong> Move to Azure App Service with minimal changes</li>
+                    <li><strong>Refactor:</strong> Redesign for cloud-native features</li>
+                    <li><strong>Hybrid:</strong> Keep some components on-premises, others in cloud</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="advanced-concepts" class="topic-section">
+            <h2>Advanced Concepts</h2>
+            
+            <div class="concept-card">
+                <h3>Design Patterns</h3>
+                <div class="patterns">
+                    <div class="pattern">
+                        <h4>Repository Pattern</h4>
+                        <p>Decouples data access logic from business logic</p>
+                        <div class="code-example">
+                            <pre><code>public interface IUserRepository {
+    Task&lt;User&gt; GetByIdAsync(int id);
+    Task&lt;IEnumerable&lt;User&gt;&gt; GetAllAsync();
+    Task AddAsync(User user);
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="pattern">
+                        <h4>Unit of Work</h4>
+                        <p>Maintains transaction consistency across multiple repositories</p>
+                    </div>
+                    <div class="pattern">
+                        <h4>Factory Pattern</h4>
+                        <p>Creates objects without specifying exact classes - useful in workflow engines</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Asynchronous Programming</h3>
+                <div class="async-content">
+                    <h4>async/await Pattern</h4>
+                    <div class="code-example">
+                        <pre><code>public async Task&lt;IActionResult&gt; GetUserAsync(int id) {
+    var user = await _userService.GetByIdAsync(id);
+    if (user == null) return NotFound();
+    return Ok(user);
+}</code></pre>
+                    </div>
+                    <p><strong>Benefits:</strong> Better scalability, non-blocking operations, improved user experience</p>
+                    <p><strong>Use Cases:</strong> File uploads, database operations, external API calls</p>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Security Best Practices</h3>
+                <ul class="security-list">
+                    <li><strong>Authentication:</strong> JWT tokens, OAuth2, Azure AD integration</li>
+                    <li><strong>Authorization:</strong> Role-based access control (RBAC)</li>
+                    <li><strong>Data Protection:</strong> Encryption at rest and in transit</li>
+                    <li><strong>Input Validation:</strong> Prevent SQL injection, XSS attacks</li>
+                    <li><strong>HTTPS:</strong> Secure communication channels</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="best-practices" class="topic-section">
+            <h2>Best Practices & DevOps</h2>
+            
+            <div class="concept-card">
+                <h3>Code Quality</h3>
+                <ul class="best-practices-list">
+                    <li><strong>Clean Code:</strong> Descriptive naming, single responsibility</li>
+                    <li><strong>Error Handling:</strong> Try-catch blocks, custom exceptions, logging</li>
+                    <li><strong>Unit Testing:</strong> xUnit, NUnit, mocking with Moq</li>
+                    <li><strong>Code Reviews:</strong> Peer review process, SOLID principles enforcement</li>
+                </ul>
+            </div>
+
+            <div class="concept-card">
+                <h3>DevOps & CI/CD</h3>
+                <div class="devops-practices">
+                    <div class="practice">
+                        <h4>Azure DevOps Pipelines</h4>
+                        <p>Automated build, test, and deployment processes</p>
+                    </div>
+                    <div class="practice">
+                        <h4>Monitoring & Logging</h4>
+                        <p>Application Insights, structured logging with Serilog</p>
+                    </div>
+                    <div class="practice">
+                        <h4>Performance Optimization</h4>
+                        <p>Profiling, query optimization, caching strategies</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Legacy System Maintenance</h3>
+                <p>Working with 20+ year old platforms requires:</p>
+                <ul>
+                    <li>Careful integration between old and new components</li>
+                    <li>Gradual migration strategies</li>
+                    <li>Maintaining business continuity</li>
+                    <li>Documentation of existing systems</li>
+                    <li>Risk assessment for changes</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 .NET Interview Preparation Guide</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
