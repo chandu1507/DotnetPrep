@@ -19,7 +19,10 @@
             <ul>
                 <li><a href="#oop-concepts">OOP Concepts</a></li>
                 <li><a href="#dotnet-fundamentals">.NET Fundamentals</a></li>
-                <li><a href="#aspnet-webapi">ASP.NET & Web API</a></li>
+                <li><a href="#aspnet-webapi">ASP.NET Web API</a></li>
+                <li><a href="#entity-framework">Entity Framework</a></li>
+                <li><a href="#authentication-authorization">Auth & Security</a></li>
+                <li><a href="#windows-services">Background Services</a></li>
                 <li><a href="#database-sql">Database & SQL</a></li>
                 <li><a href="#enterprise-architecture">Enterprise Architecture</a></li>
                 <li><a href="#cloud-azure">Cloud & Azure</a></li>
@@ -265,7 +268,7 @@ public interface IProfileService {
             <h2>.NET Framework & .NET Core Fundamentals</h2>
             
             <div class="concept-card">
-                <h3>Framework vs Core/.NET 5+</h3>
+                <h3>.NET Framework vs .NET Core/.NET 5+</h3>
                 <div class="comparison-table">
                     <table>
                         <thead>
@@ -279,7 +282,7 @@ public interface IProfileService {
                             <tr>
                                 <td>Platform</td>
                                 <td>Windows only</td>
-                                <td>Cross-platform</td>
+                                <td>Cross-platform (Windows, Linux, macOS)</td>
                             </tr>
                             <tr>
                                 <td>Deployment</td>
@@ -289,68 +292,604 @@ public interface IProfileService {
                             <tr>
                                 <td>Performance</td>
                                 <td>Good</td>
-                                <td>Better, optimized</td>
+                                <td>Better, highly optimized</td>
                             </tr>
                             <tr>
-                                <td>Use Case</td>
-                                <td>Legacy Windows apps</td>
-                                <td>Cloud, microservices, modern apps</td>
+                                <td>Use Cases</td>
+                                <td>Legacy apps, WebForms, WCF, WinForms</td>
+                                <td>Microservices, REST APIs, cloud-native</td>
+                            </tr>
+                            <tr>
+                                <td>Deployment Target</td>
+                                <td>On-premises servers</td>
+                                <td>Containers, Azure, Docker</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="example">
-                    <h4>Real-World Migration:</h4>
-                    <p>Enterprise modernization: migrating legacy ASP.NET apps to .NET Core for Azure deployment and better scalability.</p>
+                    <h4>Real Enterprise Migration:</h4>
+                    <p>Many enterprises are migrating 15–20-year-old ASP.NET Framework web apps to .NET 6+ for containerization and Azure deployment, improving scalability and reducing infrastructure costs.</p>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Solution & Project Structure</h3>
+                <div class="enterprise-example">
+                    <h5>Enterprise Solution Architecture</h5>
+                    <div class="code-example">
+                        <pre><code>MySolution/
+├── Company.Product.WebApi/          # Web API controllers
+├── Company.Product.Core/            # Business/domain logic
+├── Company.Product.Data/            # EF Core/data access
+├── Company.Product.Tests/           # Unit/integration tests
+└── Company.Product.Infrastructure/  # External services</code></pre>
+                    </div>
+                    <ul>
+                        <li><strong>Assembly:</strong> Output file (.dll/.exe) - unit of deployment and versioning</li>
+                        <li><strong>Namespace:</strong> Logical grouping preventing naming conflicts</li>
+                        <li><strong>Clean Separation:</strong> Supports maintainability, reusability, and CI/CD</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>CLR, CTS & Managed Code</h3>
+                <div class="dotnet-architecture">
+                    <div class="architecture-component">
+                        <h4>CLR (Common Language Runtime)</h4>
+                        <p>The virtual machine that runs .NET applications</p>
+                        <ul>
+                            <li>Memory management (Garbage Collection)</li>
+                            <li>Type safety and security</li>
+                            <li>Exception handling</li>
+                            <li>Thread management</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="architecture-component">
+                        <h4>CTS (Common Type System)</h4>
+                        <p>Defines how types are declared and used across languages</p>
+                        <ul>
+                            <li>Cross-language interoperability (C#, F#, VB.NET)</li>
+                            <li>Type safety guarantees</li>
+                            <li>Unified type system</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="architecture-component">
+                        <h4>Managed Code Benefits</h4>
+                        <ul>
+                            <li>Memory safety (no buffer overflows)</li>
+                            <li>Automatic garbage collection</li>
+                            <li>Security sandbox</li>
+                            <li>Cross-platform deployment</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="example">
+                    <h4>Real Project Impact:</h4>
+                    <p>Memory leaks, unhandled exceptions, and security vulnerabilities are minimized compared to unmanaged code (C/C++ DLLs), reducing production incidents and maintenance costs.</p>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Key C# Language Features for Enterprise</h3>
+                
+                <div class="language-feature">
+                    <h4>Async/Await</h4>
+                    <p>Non-blocking operations crucial for scalable APIs</p>
+                    <div class="code-example">
+                        <pre><code>public async Task&lt;ActionResult&lt;User&gt;&gt; GetUserAsync(int id)
+{
+    var user = await _userService.GetByIdAsync(id);
+    if (user == null) return NotFound();
+    return Ok(user);
+}</code></pre>
+                    </div>
+                    <p><strong>Use Case:</strong> Async DB queries, file uploads, external API calls</p>
+                </div>
+
+                <div class="language-feature">
+                    <h4>LINQ (Language Integrated Query)</h4>
+                    <p>Strongly-typed, chainable querying for in-memory and database operations</p>
+                    <div class="code-example">
+                        <pre><code>var activeUsers = await _context.Users
+    .Where(u => u.IsActive && u.LastLoginDate > DateTime.Now.AddDays(-30))
+    .OrderBy(u => u.LastName)
+    .Select(u => new UserDto { Name = u.FullName, Email = u.Email })
+    .ToListAsync();</code></pre>
+                    </div>
+                </div>
+
+                <div class="language-feature">
+                    <h4>Generics & Type Safety</h4>
+                    <p>Reusable, type-safe classes and methods</p>
+                    <div class="code-example">
+                        <pre><code>public class Repository&lt;T&gt; where T : class
+{
+    private readonly DbContext _context;
+    
+    public async Task&lt;T&gt; GetByIdAsync(int id) => 
+        await _context.Set&lt;T&gt;().FindAsync(id);
+        
+    public async Task AddAsync(T entity) => 
+        await _context.Set&lt;T&gt;().AddAsync(entity);
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="language-feature">
+                    <h4>Delegates & Events</h4>
+                    <p>Event-driven systems and pub-sub patterns</p>
+                    <div class="code-example">
+                        <pre><code>public event EventHandler&lt;OrderProcessedEventArgs&gt; OrderProcessed;
+
+public async Task ProcessOrderAsync(Order order)
+{
+    // Process order logic
+    await SaveOrderAsync(order);
+    
+    // Notify subscribers
+    OrderProcessed?.Invoke(this, new OrderProcessedEventArgs(order));
+}</code></pre>
+                    </div>
+                    <p><strong>Use Case:</strong> Real-time notifications, audit logging, workflow systems</p>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Dependency Injection & IoC</h3>
+                <div class="di-explanation">
+                    <h4>Why DI Matters in Enterprise</h4>
+                    <ul>
+                        <li>Promotes testability and loose coupling</li>
+                        <li>Enables easy mocking for unit tests</li>
+                        <li>Supports configuration-based service swapping</li>
+                        <li>Facilitates clean architecture patterns</li>
+                    </ul>
+                </div>
+
+                <div class="code-example">
+                    <pre><code>// Program.cs / Startup.cs
+builder.Services.AddScoped&lt;IUserService, UserService&gt;();
+builder.Services.AddScoped&lt;IEmailService, EmailService&gt;();
+builder.Services.AddSingleton&lt;IConfiguration&gt;(configuration);
+
+// Controller
+public class UsersController : ControllerBase
+{
+    private readonly IUserService _userService;
+    private readonly IEmailService _emailService;
+    
+    public UsersController(IUserService userService, IEmailService emailService)
+    {
+        _userService = userService;
+        _emailService = emailService;
+    }
+}</code></pre>
+                </div>
+
+                <div class="di-lifetimes">
+                    <h5>Service Lifetimes</h5>
+                    <ul>
+                        <li><strong>Transient:</strong> New instance every time (lightweight services)</li>
+                        <li><strong>Scoped:</strong> One instance per request (repositories, business services)</li>
+                        <li><strong>Singleton:</strong> Single instance for app lifetime (configuration, caching)</li>
+                    </ul>
+                </div>
+
+                <div class="example">
+                    <h4>Real Example:</h4>
+                    <p>Swap real email service for mock in integration tests without changing any business logic code.</p>
                 </div>
             </div>
         </section>
 
         <section id="aspnet-webapi" class="topic-section">
-            <h2>ASP.NET & Web API</h2>
+            <h2>ASP.NET Core Web API</h2>
             
             <div class="concept-card">
-                <h3>Key Components</h3>
+                <h3>Controllers & Routing</h3>
+                <p>RESTful endpoints for CRUD operations and business logic</p>
                 
-                <div class="component">
-                    <h4>Controllers</h4>
-                    <p>Entry points for web APIs, handle HTTP requests and return responses.</p>
-                    <div class="code-example">
-                        <pre><code>[ApiController]
+                <div class="code-example">
+                    <pre><code>[ApiController]
 [Route("api/[controller]")]
-public class ProductsController : ControllerBase {
-    [HttpGet]
-    public IActionResult GetProducts() { ... }
+public class OrdersController : ControllerBase 
+{
+    private readonly IOrderService _orderService;
+    
+    public OrdersController(IOrderService orderService)
+    {
+        _orderService = orderService;
+    }
+    
+    [HttpGet("{id}")]
+    public async Task&lt;ActionResult&lt;OrderDto&gt;&gt; GetOrder(int id)
+    {
+        var order = await _orderService.GetByIdAsync(id);
+        return order != null ? Ok(order) : NotFound();
+    }
     
     [HttpPost]
-    public IActionResult CreateProduct(Product product) { ... }
-}</code></pre>
-                    </div>
-                </div>
-
-                <div class="component">
-                    <h4>Middleware</h4>
-                    <p>Components that handle requests in the pipeline - authentication, logging, error handling.</p>
-                    <div class="example">
-                        <p><strong>Banking App Example:</strong> JWT middleware authenticates every API request before reaching controllers.</p>
-                    </div>
-                </div>
-
-                <div class="component">
-                    <h4>Dependency Injection</h4>
-                    <p>Built-in DI container for managing service lifetimes and dependencies.</p>
-                    <div class="code-example">
-                        <pre><code>// Startup.cs
-services.AddScoped&lt;IUserService, UserService&gt;();
-
-// Controller
-public class UsersController : ControllerBase {
-    private readonly IUserService _userService;
-    public UsersController(IUserService userService) {
-        _userService = userService;
+    public async Task&lt;ActionResult&lt;OrderDto&gt;&gt; CreateOrder(CreateOrderRequest request)
+    {
+        var order = await _orderService.CreateAsync(request);
+        return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
     }
 }</code></pre>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Model Binding & Validation</h3>
+                <p>Enforces data integrity at API entry points</p>
+                
+                <div class="code-example">
+                    <pre><code>public class CreateUserRequest
+{
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; }
+    
+    [Required]
+    [StringLength(100, MinimumLength = 6)]
+    public string Password { get; set; }
+    
+    [Range(18, 120)]
+    public int Age { get; set; }
+}
+
+[HttpPost]
+public async Task&lt;IActionResult&gt; CreateUser([FromBody] CreateUserRequest request)
+{
+    if (!ModelState.IsValid)
+        return BadRequest(ModelState);
+        
+    // Process valid request
+    var user = await _userService.CreateAsync(request);
+    return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Middleware Pipeline</h3>
+                <p>Components that process requests in sequence</p>
+                
+                <div class="middleware-pipeline">
+                    <div class="middleware-component">
+                        <h4>Authentication Middleware</h4>
+                        <p>JWT token validation, OAuth2, Azure AD integration</p>
                     </div>
+                    <div class="middleware-component">
+                        <h4>Authorization Middleware</h4>
+                        <p>Role-based and policy-based access control</p>
+                    </div>
+                    <div class="middleware-component">
+                        <h4>Logging Middleware</h4>
+                        <p>Request/response logging, correlation IDs</p>
+                    </div>
+                    <div class="middleware-component">
+                        <h4>Exception Handling</h4>
+                        <p>Global error handling and response formatting</p>
+                    </div>
+                </div>
+
+                <div class="code-example">
+                    <pre><code>// Program.cs
+var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseMiddleware&lt;RequestLoggingMiddleware&gt;();
+app.UseMiddleware&lt;GlobalExceptionMiddleware&gt;();
+
+app.MapControllers();</code></pre>
+                </div>
+                
+                <div class="example">
+                    <h4>Banking App Example:</h4>
+                    <p>JWT middleware authenticates every API request, logging middleware tracks all transactions with correlation IDs for audit trails.</p>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>API Versioning</h3>
+                <p>Supports multiple API versions for backward compatibility</p>
+                
+                <div class="code-example">
+                    <pre><code>[ApiController]
+[ApiVersion("1.0")]
+[ApiVersion("2.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
+public class UsersController : ControllerBase
+{
+    [HttpGet]
+    [MapToApiVersion("1.0")]
+    public IActionResult GetUsersV1() => Ok(/* V1 response */);
+    
+    [HttpGet]
+    [MapToApiVersion("2.0")]
+    public IActionResult GetUsersV2() => Ok(/* V2 response with additional fields */);
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="entity-framework" class="topic-section">
+            <h2>Entity Framework Core</h2>
+            
+            <div class="concept-card">
+                <h3>ORM & Database Mapping</h3>
+                <p>Maps database tables to C# classes with LINQ support</p>
+                
+                <div class="code-example">
+                    <pre><code>public class User
+{
+    public int Id { get; set; }
+    public string Email { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public string CreatedBy { get; set; }
+    
+    // Navigation properties
+    public virtual ICollection&lt;Order&gt; Orders { get; set; }
+}
+
+public class ApplicationDbContext : DbContext
+{
+    public DbSet&lt;User&gt; Users { get; set; }
+    public DbSet&lt;Order&gt; Orders { get; set; }
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity&lt;User&gt;()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+            
+        modelBuilder.Entity&lt;Order&gt;()
+            .HasOne(o => o.User)
+            .WithMany(u => u.Orders)
+            .HasForeignKey(o => o.UserId);
+    }
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Migrations & Schema Management</h3>
+                <p>Version-controlled database schema changes</p>
+                
+                <div class="migration-commands">
+                    <div class="command-group">
+                        <h4>Common EF Core Commands</h4>
+                        <div class="code-example">
+                            <pre><code># Add new migration
+dotnet ef migrations add AddUserTable
+
+# Update database
+dotnet ef database update
+
+# Generate SQL script
+dotnet ef migrations script</code></pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="example">
+                    <h4>Enterprise Benefit:</h4>
+                    <p>Critical for team collaboration and CI/CD pipelines. Database changes are tracked, versioned, and can be automatically applied during deployments.</p>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>DbContext & Unit of Work</h3>
+                <p>Manages queries, change tracking, and transactions</p>
+                
+                <div class="code-example">
+                    <pre><code>public class OrderService
+{
+    private readonly ApplicationDbContext _context;
+    
+    public OrderService(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+    
+    public async Task&lt;Order&gt; CreateOrderAsync(CreateOrderRequest request)
+    {
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        
+        try
+        {
+            var order = new Order { /* map properties */ };
+            _context.Orders.Add(order);
+            
+            // Update inventory
+            var product = await _context.Products.FindAsync(request.ProductId);
+            product.Stock -= request.Quantity;
+            
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+            
+            return order;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+}</code></pre>
+                </div>
+                
+                <div class="example">
+                    <h4>Real Example:</h4>
+                    <p>Auto-generating audit columns (CreatedOn, ModifiedBy) via EF Core conventions and interceptors for compliance requirements.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="authentication-authorization" class="topic-section">
+            <h2>Authentication & Authorization</h2>
+            
+            <div class="concept-card">
+                <h3>Authentication - "Who are you?"</h3>
+                
+                <div class="auth-methods">
+                    <div class="auth-method">
+                        <h4>JWT Tokens</h4>
+                        <div class="code-example">
+                            <pre><code>services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = configuration["Jwt:Issuer"],
+            ValidAudience = configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+        };
+    });</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="auth-method">
+                        <h4>OAuth2 & Azure AD</h4>
+                        <div class="code-example">
+                            <pre><code>services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApp(configuration.GetSection("AzureAd"));</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Authorization - "What can you do?"</h3>
+                
+                <div class="authorization-types">
+                    <div class="auth-type">
+                        <h4>Role-Based Authorization</h4>
+                        <div class="code-example">
+                            <pre><code>[Authorize(Roles = "Admin,Manager")]
+public class AdminController : ControllerBase
+{
+    [HttpDelete("users/{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task&lt;IActionResult&gt; DeleteUser(int id) { /* */ }
+}</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="auth-type">
+                        <h4>Policy-Based Authorization</h4>
+                        <div class="code-example">
+                            <pre><code>services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanManageUsers", policy =>
+        policy.RequireClaim("permission", "users.manage"));
+        
+    options.AddPolicy("MinimumAge", policy =>
+        policy.Requirements.Add(new MinimumAgeRequirement(18)));
+});
+
+[Authorize(Policy = "CanManageUsers")]
+public class UserManagementController : ControllerBase { /* */ }</code></pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="example">
+                    <h4>Real Example:</h4>
+                    <p>HRMS system with role-based access: Employees can view their own data, Managers can approve leave requests, HR Admins can manage all employee records.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="windows-services" class="topic-section">
+            <h2>Windows Services & Background Jobs</h2>
+            
+            <div class="concept-card">
+                <h3>Background Services Use Cases</h3>
+                <ul class="service-use-cases">
+                    <li>Scheduled database cleanup and maintenance</li>
+                    <li>Email sending and notification processing</li>
+                    <li>Data import/export operations</li>
+                    <li>ETL (Extract, Transform, Load) jobs</li>
+                    <li>File processing and monitoring</li>
+                    <li>Report generation and distribution</li>
+                </ul>
+            </div>
+
+            <div class="concept-card">
+                <h3>.NET Worker Service</h3>
+                <p>Modern approach for background services in .NET</p>
+                
+                <div class="code-example">
+                    <pre><code>public class InvoiceProcessingService : BackgroundService
+{
+    private readonly ILogger&lt;InvoiceProcessingService&gt; _logger;
+    private readonly IServiceProvider _serviceProvider;
+    
+    public InvoiceProcessingService(
+        ILogger&lt;InvoiceProcessingService&gt; logger,
+        IServiceProvider serviceProvider)
+    {
+        _logger = logger;
+        _serviceProvider = serviceProvider;
+    }
+    
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var invoiceService = scope.ServiceProvider
+                    .GetRequiredService&lt;IInvoiceService&gt;();
+                
+                await invoiceService.ProcessPendingInvoicesAsync();
+                
+                _logger.LogInformation("Invoice processing completed at {Time}", 
+                    DateTimeOffset.Now);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing invoices");
+            }
+            
+            await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
+        }
+    }
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Deployment as Windows Service</h3>
+                
+                <div class="code-example">
+                    <pre><code># Install as Windows Service
+sc create "InvoiceProcessor" binpath="C:\Services\InvoiceProcessor.exe"
+
+# Start the service
+sc start "InvoiceProcessor"
+
+# Or use .NET CLI
+dotnet publish -c Release
+sc create "MyService" binpath="C:\MyApp\MyService.exe"</code></pre>
+                </div>
+                
+                <div class="example">
+                    <h4>Real Example:</h4>
+                    <p>Background invoice processing service that runs nightly, processes pending invoices, generates PDFs, sends emails, and logs progress for monitoring and troubleshooting.</p>
                 </div>
             </div>
         </section>
