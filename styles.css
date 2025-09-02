@@ -4323,6 +4323,701 @@ html {
     background-color: #f8f9fa;
 }
 
+/* Stored Procedures vs Dynamic SQL Styles */
+.sp-vs-dynamic-intro {
+    background-color: #e3f2fd;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border-left: 4px solid #2196f3;
+    text-align: center;
+}
+
+.sp-dynamic-comparison {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.stored-procedure-section,
+.dynamic-sql-section {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.stored-procedure-section {
+    border-left: 5px solid #28a745;
+}
+
+.dynamic-sql-section {
+    border-left: 5px solid #fd7e14;
+}
+
+.stored-procedure-section h4 {
+    color: #28a745;
+    margin-bottom: 1rem;
+}
+
+.dynamic-sql-section h4 {
+    color: #fd7e14;
+    margin-bottom: 1rem;
+}
+
+.sp-characteristics,
+.dynamic-characteristics {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.sp-characteristics h5,
+.dynamic-characteristics h5 {
+    color: #495057;
+    margin-bottom: 1rem;
+}
+
+.sp-characteristics ul,
+.dynamic-characteristics ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sp-characteristics li,
+.dynamic-characteristics li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.sp-characteristics li:before,
+.dynamic-characteristics li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #666;
+}
+
+.sp-example,
+.dynamic-example {
+    margin: 1.5rem 0;
+}
+
+.sp-example h5,
+.dynamic-example h5 {
+    color: #495057;
+    margin-bottom: 1rem;
+}
+
+.sp-benefits {
+    background-color: #d4edda;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    border-left: 3px solid #28a745;
+}
+
+.sp-benefits h5 {
+    color: #155724;
+    margin-bottom: 1rem;
+}
+
+.sp-benefits ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sp-benefits li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.sp-benefits li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #28a745;
+    font-weight: bold;
+}
+
+.dynamic-benefits-risks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.dynamic-benefits {
+    background-color: #d4edda;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 3px solid #28a745;
+}
+
+.dynamic-risks {
+    background-color: #f8d7da;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 3px solid #dc3545;
+}
+
+.dynamic-benefits h5 {
+    color: #155724;
+    margin-bottom: 1rem;
+}
+
+.dynamic-risks h5 {
+    color: #721c24;
+    margin-bottom: 1rem;
+}
+
+.dynamic-benefits ul,
+.dynamic-risks ul {
+    list-style: none;
+    padding: 0;
+}
+
+.dynamic-benefits li,
+.dynamic-risks li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.dynamic-benefits li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #28a745;
+    font-weight: bold;
+}
+
+.dynamic-risks li:before {
+    content: "✗";
+    position: absolute;
+    left: 0;
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.comparison-table {
+    margin: 2rem 0;
+}
+
+.comparison-table h4 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.comparison-table table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.comparison-table th {
+    background-color: #2196f3;
+    color: white;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.comparison-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.analogy-section {
+    background-color: #fff3cd;
+    padding: 2rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+    border-left: 4px solid #ffc107;
+}
+
+.analogy-section h4 {
+    color: #856404;
+    margin-bottom: 1.5rem;
+}
+
+.analogy-comparison {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 1rem 0;
+}
+
+.analogy-item {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.sp-analogy {
+    border-left: 4px solid #28a745;
+}
+
+.dynamic-analogy {
+    border-left: 4px solid #fd7e14;
+}
+
+.sp-analogy h5 {
+    color: #28a745;
+}
+
+.dynamic-analogy h5 {
+    color: #fd7e14;
+}
+
+/* Removing Duplicate Records Styles */
+.duplicates-intro {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border-left: 4px solid #6f42c1;
+}
+
+.sample-data {
+    background-color: #e8f5e8;
+    padding: 2rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+    border-left: 4px solid #28a745;
+}
+
+.sample-data h4 {
+    color: #155724;
+    margin-bottom: 1.5rem;
+}
+
+.sample-data table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.sample-data th {
+    background-color: #28a745;
+    color: white;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.sample-data td {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.sample-data tr:hover {
+    background-color: #f8f9fa;
+}
+
+.duplicate-removal-methods {
+    display: grid;
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.method-card {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-left: 4px solid #6c757d;
+}
+
+.method-card.preferred {
+    border-left: 4px solid #28a745;
+    background: linear-gradient(135deg, #fff 0%, #f8fff8 100%);
+}
+
+.method-card.preferred h4 {
+    color: #28a745;
+}
+
+.method-card h4 {
+    color: #495057;
+    margin-bottom: 1rem;
+}
+
+.method-explanation {
+    background-color: #e3f2fd;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-top: 1rem;
+    border-left: 3px solid #2196f3;
+}
+
+.method-explanation p {
+    margin: 0;
+    color: #1976d2;
+}
+
+.method-warning {
+    background-color: #fff3cd;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-top: 1rem;
+    border-left: 3px solid #ffc107;
+}
+
+.method-warning p {
+    margin: 0;
+    color: #856404;
+}
+
+.methods-comparison {
+    margin: 2rem 0;
+}
+
+.methods-comparison h4 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.methods-comparison table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.methods-comparison th {
+    background-color: #6f42c1;
+    color: white;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.methods-comparison td {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.methods-comparison tr:hover {
+    background-color: #f8f9fa;
+}
+
+.interview-tip-duplicates {
+    background-color: #d1ecf1;
+    padding: 2rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+    border-left: 4px solid #17a2b8;
+}
+
+.interview-tip-duplicates h4 {
+    color: #0c5460;
+    margin-bottom: 1rem;
+}
+
+/* Window Functions Comparison Styles */
+.window-functions-intro {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border-left: 4px solid #6f42c1;
+}
+
+.window-functions-comparison {
+    display: grid;
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.function-explanation {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.row-number-exp {
+    border-left: 5px solid #007bff;
+}
+
+.rank-exp {
+    border-left: 5px solid #28a745;
+}
+
+.dense-rank-exp {
+    border-left: 5px solid #fd7e14;
+}
+
+.row-number-exp h4 {
+    color: #007bff;
+}
+
+.rank-exp h4 {
+    color: #28a745;
+}
+
+.dense-rank-exp h4 {
+    color: #fd7e14;
+}
+
+.function-characteristics {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.function-characteristics h5 {
+    color: #495057;
+    margin-bottom: 1rem;
+}
+
+.function-characteristics ul {
+    list-style: none;
+    padding: 0;
+}
+
+.function-characteristics li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.function-characteristics li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #666;
+}
+
+.function-example {
+    margin: 1.5rem 0;
+}
+
+.function-example h5 {
+    color: #495057;
+    margin-bottom: 1rem;
+}
+
+.function-example table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin: 1rem 0;
+}
+
+.function-example th {
+    background-color: #495057;
+    color: white;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.function-example td {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.function-example tr:hover {
+    background-color: #f8f9fa;
+}
+
+.functions-summary {
+    margin: 2rem 0;
+}
+
+.functions-summary h4 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.functions-summary table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.functions-summary th {
+    background-color: #6f42c1;
+    color: white;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.functions-summary td {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.functions-summary tr:hover {
+    background-color: #f8f9fa;
+}
+
+.practical-analogies {
+    background-color: #fff3cd;
+    padding: 2rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+    border-left: 4px solid #ffc107;
+}
+
+.practical-analogies h4 {
+    color: #856404;
+    margin-bottom: 1.5rem;
+}
+
+.analogies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 1rem 0;
+}
+
+.analogy-card {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.analogy-card:nth-child(1) {
+    border-left: 4px solid #007bff;
+}
+
+.analogy-card:nth-child(2) {
+    border-left: 4px solid #28a745;
+}
+
+.analogy-card:nth-child(3) {
+    border-left: 4px solid #fd7e14;
+}
+
+.analogy-card:nth-child(1) h5 {
+    color: #007bff;
+}
+
+.analogy-card:nth-child(2) h5 {
+    color: #28a745;
+}
+
+.analogy-card:nth-child(3) h5 {
+    color: #fd7e14;
+}
+
+.real-world-scenarios {
+    background-color: #e8f5e8;
+    padding: 2rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+    border-left: 4px solid #28a745;
+}
+
+.real-world-scenarios h4 {
+    color: #155724;
+    margin-bottom: 1.5rem;
+}
+
+.scenarios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin: 1rem 0;
+}
+
+.scenario-card {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.scenario-card:nth-child(1) {
+    border-left: 4px solid #007bff;
+}
+
+.scenario-card:nth-child(2) {
+    border-left: 4px solid #28a745;
+}
+
+.scenario-card:nth-child(3) {
+    border-left: 4px solid #fd7e14;
+}
+
+.scenario-card:nth-child(1) h5 {
+    color: #007bff;
+}
+
+.scenario-card:nth-child(2) h5 {
+    color: #28a745;
+}
+
+.scenario-card:nth-child(3) h5 {
+    color: #fd7e14;
+}
+
+.scenario-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.scenario-card li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.scenario-card:nth-child(1) li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.scenario-card:nth-child(2) li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #28a745;
+    font-weight: bold;
+}
+
+.scenario-card:nth-child(3) li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #fd7e14;
+    font-weight: bold;
+}
+
 /* Print Styles */
 @media print {
     .main-nav {

@@ -1879,6 +1879,641 @@ END</code></pre>
             </div>
 
             <div class="concept-card">
+                <h3>Stored Procedures vs Dynamic SQL</h3>
+                
+                <div class="sp-vs-dynamic-intro">
+                    <p>Understanding the differences between stored procedures and dynamic SQL is crucial for enterprise database design and performance optimization.</p>
+                </div>
+
+                <div class="sp-dynamic-comparison">
+                    <div class="stored-procedure-section">
+                        <h4>🔹 Stored Procedure (SP)</h4>
+                        <p>A <strong>precompiled block of SQL code</strong> stored in the database with cached execution plans for optimal performance.</p>
+                        
+                        <div class="sp-characteristics">
+                            <h5>📋 Key Characteristics</h5>
+                            <ul>
+                                <li>Can take parameters</li>
+                                <li>Runs on the server side</li>
+                                <li>Execution plan is cached (faster on repeated calls)</li>
+                                <li>Precompiled and optimized</li>
+                            </ul>
+                        </div>
+
+                        <div class="sp-example">
+                            <h5>👉 Example</h5>
+                            <div class="code-example">
+                                <pre><code>CREATE PROCEDURE GetCustomerOrders
+    @CustomerID INT
+AS
+BEGIN
+    SELECT OrderID, Product, OrderDate, TotalAmount
+    FROM Orders
+    WHERE CustomerID = @CustomerID
+    ORDER BY OrderDate DESC;
+END;</code></pre>
+                            </div>
+                            
+                            <h6>Usage:</h6>
+                            <div class="code-example">
+                                <pre><code>EXEC GetCustomerOrders @CustomerID = 1;</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="sp-benefits">
+                            <h5>✅ Benefits</h5>
+                            <ul>
+                                <li><strong>Performance:</strong> Execution plan reused for faster subsequent calls</li>
+                                <li><strong>Security:</strong> Can restrict direct table access, prevents SQL injection</li>
+                                <li><strong>Maintainability:</strong> Centralized business logic, easy to update</li>
+                                <li><strong>Consistency:</strong> Supports business logic in one place</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="dynamic-sql-section">
+                        <h4>🔹 Dynamic SQL Query</h4>
+                        <p>SQL built <strong>at runtime</strong> as a string, offering maximum flexibility for complex conditional queries.</p>
+                        
+                        <div class="dynamic-characteristics">
+                            <h5>📋 Key Characteristics</h5>
+                            <ul>
+                                <li>Built dynamically based on runtime conditions</li>
+                                <li>Flexible query structure</li>
+                                <li>Requires <code>EXEC()</code> or <code>sp_executesql</code> to run</li>
+                                <li>Can include dynamic table names, columns, filters</li>
+                            </ul>
+                        </div>
+
+                        <div class="dynamic-example">
+                            <h5>👉 Example</h5>
+                            <div class="code-example">
+                                <pre><code>DECLARE @sql NVARCHAR(MAX);
+DECLARE @CustomerID INT = 1;
+
+SET @sql = 'SELECT OrderID, Product, OrderDate, TotalAmount 
+            FROM Orders 
+            WHERE CustomerID = ' + CAST(@CustomerID AS NVARCHAR) + '
+            ORDER BY OrderDate DESC';
+
+EXEC(@sql);</code></pre>
+                            </div>
+                            
+                            <h6>Better approach with sp_executesql:</h6>
+                            <div class="code-example">
+                                <pre><code>DECLARE @sql NVARCHAR(MAX);
+SET @sql = 'SELECT OrderID, Product FROM Orders WHERE CustomerID = @CustID';
+
+EXEC sp_executesql @sql, N'@CustID INT', @CustID = 1;</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="dynamic-benefits-risks">
+                            <div class="dynamic-benefits">
+                                <h5>✅ Benefits</h5>
+                                <ul>
+                                    <li><strong>Flexibility:</strong> Can build queries with dynamic table names, columns</li>
+                                    <li><strong>Conditional Logic:</strong> Perfect for search filters with optional conditions</li>
+                                    <li><strong>Adaptability:</strong> Can modify query structure at runtime</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="dynamic-risks">
+                                <h5>❌ Risks</h5>
+                                <ul>
+                                    <li><strong>Performance:</strong> Slower (no cached plan unless using sp_executesql)</li>
+                                    <li><strong>Security:</strong> Prone to SQL Injection if not handled properly</li>
+                                    <li><strong>Maintenance:</strong> Harder to debug and maintain</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-table">
+                    <h4>🔑 Comprehensive Comparison</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Stored Procedure (SP)</th>
+                                <th>Dynamic Query</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Definition</strong></td>
+                                <td>Precompiled SQL block</td>
+                                <td>SQL built at runtime</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Performance</strong></td>
+                                <td>Faster (cached execution plan)</td>
+                                <td>Slower (unless optimized with sp_executesql)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Security</strong></td>
+                                <td>Safer (permissions, parameterization)</td>
+                                <td>Risky (SQL injection possible)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Flexibility</strong></td>
+                                <td>Fixed structure</td>
+                                <td>Highly flexible</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Maintainability</strong></td>
+                                <td>Centralized, easy to maintain</td>
+                                <td>Harder to read and debug</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Use Case</strong></td>
+                                <td>Repeated logic, business rules</td>
+                                <td>Ad-hoc filters, dynamic search</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="analogy-section">
+                    <h4>👉 Easy Analogy</h4>
+                    <div class="analogy-comparison">
+                        <div class="analogy-item sp-analogy">
+                            <h5>🍽️ Stored Procedure</h5>
+                            <p>Like a <strong>restaurant menu item</strong> - the recipe is fixed, ready, and optimized for quick service.</p>
+                        </div>
+                        <div class="analogy-item dynamic-analogy">
+                            <h5>👨‍🍳 Dynamic Query</h5>
+                            <p>Like a <strong>chef making a custom dish</strong> for each order - flexible and personalized, but slower and more prone to mistakes.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Removing Duplicate Records</h3>
+                
+                <div class="duplicates-intro">
+                    <p>Removing duplicate records is a common interview question that tests your knowledge of window functions, CTEs, and SQL optimization techniques.</p>
+                </div>
+
+                <div class="sample-data">
+                    <h4>📊 Sample Data with Duplicates</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>EmpID</th>
+                                <th>Name</th>
+                                <th>Dept</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Alice</td>
+                                <td>HR</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Bob</td>
+                                <td>IT</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Bob</td>
+                                <td>IT</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Charlie</td>
+                                <td>IT</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Charlie</td>
+                                <td>IT</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="duplicate-removal-methods">
+                    <div class="method-card preferred">
+                        <h4>✅ 1. Using ROW_NUMBER() (Most Preferred)</h4>
+                        <p>Add a row number partitioned by duplicate columns, then delete where row > 1.</p>
+                        
+                        <div class="code-example">
+                            <pre><code>WITH DuplicatesCTE AS (
+    SELECT *,
+           ROW_NUMBER() OVER (PARTITION BY EmpID, Name, Dept ORDER BY EmpID) AS rn
+    FROM Employees
+)
+DELETE FROM DuplicatesCTE WHERE rn > 1;</code></pre>
+                        </div>
+                        
+                        <div class="method-explanation">
+                            <p><strong>How it works:</strong> Keeps the first occurrence of each duplicate group, removes the rest.</p>
+                        </div>
+                    </div>
+
+                    <div class="method-card">
+                        <h4>✅ 2. Using RANK() / DENSE_RANK()</h4>
+                        <p>Similar to ROW_NUMBER() but handles ties differently.</p>
+                        
+                        <div class="code-example">
+                            <pre><code>WITH RankedCTE AS (
+    SELECT *,
+           RANK() OVER (PARTITION BY EmpID, Name, Dept ORDER BY EmpID) AS rnk
+    FROM Employees
+)
+DELETE FROM RankedCTE WHERE rnk > 1;</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="method-card">
+                        <h4>✅ 3. Using GROUP BY + MIN/MAX</h4>
+                        <p>Keep one record (MIN/MAX ID) and delete others.</p>
+                        
+                        <div class="code-example">
+                            <pre><code>DELETE FROM Employees
+WHERE EmpID NOT IN (
+    SELECT MIN(EmpID)
+    FROM Employees
+    GROUP BY Name, Dept
+);</code></pre>
+                        </div>
+                        
+                        <div class="method-warning">
+                            <p><strong>⚠️ Risk:</strong> May fail with NULLs or if you need to preserve exact duplicates.</p>
+                        </div>
+                    </div>
+
+                    <div class="method-card">
+                        <h4>✅ 4. Using Self-Join</h4>
+                        <p>Delete records where a duplicate with a smaller ID exists.</p>
+                        
+                        <div class="code-example">
+                            <pre><code>DELETE e1
+FROM Employees e1
+INNER JOIN Employees e2
+    ON e1.Name = e2.Name
+   AND e1.Dept = e2.Dept
+   AND e1.EmpID > e2.EmpID;</code></pre>
+                        </div>
+                        
+                        <div class="method-explanation">
+                            <p><strong>Logic:</strong> Deletes the "later" duplicates, keeps the ones with smaller IDs.</p>
+                        </div>
+                    </div>
+
+                    <div class="method-card">
+                        <h4>✅ 5. Using DISTINCT into New Table</h4>
+                        <p>Create a new table with distinct records, then replace the original.</p>
+                        
+                        <div class="code-example">
+                            <pre><code>SELECT DISTINCT EmpID, Name, Dept
+INTO Employees_New
+FROM Employees;
+
+-- Replace original table
+DROP TABLE Employees;
+EXEC sp_rename 'Employees_New', 'Employees';</code></pre>
+                        </div>
+                        
+                        <div class="method-explanation">
+                            <p><strong>Use case:</strong> Simple approach, but involves table recreation (heavy operation).</p>
+                        </div>
+                    </div>
+
+                    <div class="method-card">
+                        <h4>✅ 6. Using Temporary Table</h4>
+                        <p>Insert distinct records into temp table, then truncate and reload.</p>
+                        
+                        <div class="code-example">
+                            <pre><code>SELECT DISTINCT * INTO #TempEmployees FROM Employees;
+
+TRUNCATE TABLE Employees;
+
+INSERT INTO Employees SELECT * FROM #TempEmployees;
+
+DROP TABLE #TempEmployees;</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="methods-comparison">
+                    <h4>🔑 Methods Comparison</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Pros</th>
+                                <th>Cons</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>ROW_NUMBER()</code></td>
+                                <td>Precise, flexible, most commonly used</td>
+                                <td>Needs CTE or subquery</td>
+                            </tr>
+                            <tr>
+                                <td><code>GROUP BY + MIN/MAX</code></td>
+                                <td>Easy, quick for simple keys</td>
+                                <td>May fail with NULLs/complex columns</td>
+                            </tr>
+                            <tr>
+                                <td><code>Self-Join</code></td>
+                                <td>Clear logic, keeps lowest ID</td>
+                                <td>Slow on large tables</td>
+                            </tr>
+                            <tr>
+                                <td><code>DISTINCT → New Table</code></td>
+                                <td>Very simple, works always</td>
+                                <td>Rebuilds table (heavy operation)</td>
+                            </tr>
+                            <tr>
+                                <td>Temp Table</td>
+                                <td>Easy for small datasets</td>
+                                <td>Not efficient for large tables</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="interview-tip-duplicates">
+                    <h4>👉 Interview Tip</h4>
+                    <p>Start with <strong>ROW_NUMBER()</strong> as it's the best practice, then mention alternatives based on the scenario (performance requirements, table size, need to preserve constraints). Always consider the trade-offs between performance, complexity, and data integrity.</p>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Window Functions: ROW_NUMBER vs RANK vs DENSE_RANK</h3>
+                
+                <div class="window-functions-intro">
+                    <p>Understanding the differences between window functions is crucial for ranking, pagination, and data analysis scenarios in enterprise applications.</p>
+                </div>
+
+                <div class="window-functions-comparison">
+                    <div class="function-explanation row-number-exp">
+                        <h4>🔹 ROW_NUMBER()</h4>
+                        <p>Assigns a <strong>unique sequential number</strong> to each row within a partition, even for tied values.</p>
+                        
+                        <div class="function-characteristics">
+                            <h5>📋 Key Characteristics</h5>
+                            <ul>
+                                <li>Always assigns unique numbers (no duplicates)</li>
+                                <li>Even tied values get different numbers</li>
+                                <li>Always increments by 1</li>
+                                <li>Perfect for pagination and deduplication</li>
+                            </ul>
+                        </div>
+
+                        <div class="function-example">
+                            <h5>👉 Example</h5>
+                            <div class="code-example">
+                                <pre><code>SELECT Name, Dept,
+       ROW_NUMBER() OVER (PARTITION BY Dept ORDER BY Name) AS RowNum
+FROM Employees;</code></pre>
+                            </div>
+                            
+                            <h6>Result (Dept = IT):</h6>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Dept</th>
+                                        <th>RowNum</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Bob</td>
+                                        <td>IT</td>
+                                        <td>1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Charlie</td>
+                                        <td>IT</td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Charlie</td>
+                                        <td>IT</td>
+                                        <td>3</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <p><strong>✅ Notice:</strong> Both Charlie entries get different numbers (2, 3) - no ties allowed.</p>
+                        </div>
+                    </div>
+
+                    <div class="function-explanation rank-exp">
+                        <h4>🔹 RANK()</h4>
+                        <p>Assigns the <strong>same rank</strong> to equal values but <strong>skips subsequent numbers</strong> (creates gaps).</p>
+                        
+                        <div class="function-characteristics">
+                            <h5>📋 Key Characteristics</h5>
+                            <ul>
+                                <li>Tied values receive the same rank</li>
+                                <li>Skips numbers after ties (creates gaps)</li>
+                                <li>Good for competitive rankings</li>
+                                <li>Next rank jumps by the number of ties</li>
+                            </ul>
+                        </div>
+
+                        <div class="function-example">
+                            <h5>👉 Example</h5>
+                            <div class="code-example">
+                                <pre><code>SELECT Name, Dept,
+       RANK() OVER (PARTITION BY Dept ORDER BY Name) AS Rnk
+FROM Employees;</code></pre>
+                            </div>
+                            
+                            <h6>Result (Dept = IT):</h6>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Dept</th>
+                                        <th>Rnk</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Bob</td>
+                                        <td>IT</td>
+                                        <td>1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Charlie</td>
+                                        <td>IT</td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Charlie</td>
+                                        <td>IT</td>
+                                        <td>2</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <p><strong>✅ Tie:</strong> Both Charlies get rank 2, next rank would be 4 (skips 3).</p>
+                        </div>
+                    </div>
+
+                    <div class="function-explanation dense-rank-exp">
+                        <h4>🔹 DENSE_RANK()</h4>
+                        <p>Same as RANK() but with <strong>no gaps</strong> after ties - consecutive ranking.</p>
+                        
+                        <div class="function-characteristics">
+                            <h5>📋 Key Characteristics</h5>
+                            <ul>
+                                <li>Tied values receive the same rank</li>
+                                <li>No gaps in ranking sequence</li>
+                                <li>Continuous numbering after ties</li>
+                                <li>Good for category-based rankings</li>
+                            </ul>
+                        </div>
+
+                        <div class="function-example">
+                            <h5>👉 Example</h5>
+                            <div class="code-example">
+                                <pre><code>SELECT Name, Dept,
+       DENSE_RANK() OVER (PARTITION BY Dept ORDER BY Name) AS DRnk
+FROM Employees;</code></pre>
+                            </div>
+                            
+                            <h6>Result (Dept = IT):</h6>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Dept</th>
+                                        <th>DRnk</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Bob</td>
+                                        <td>IT</td>
+                                        <td>1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Charlie</td>
+                                        <td>IT</td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Charlie</td>
+                                        <td>IT</td>
+                                        <td>2</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <p><strong>✅ Tie:</strong> Both Charlies get rank 2, next rank will be 3 (no skip).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="functions-summary">
+                    <h4>🔑 Functions Summary</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Function</th>
+                                <th>Handles Ties</th>
+                                <th>Numbers Skipped?</th>
+                                <th>Example Output</th>
+                                <th>Best Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>ROW_NUMBER()</strong></td>
+                                <td>❌ No</td>
+                                <td>Never</td>
+                                <td>1, 2, 3</td>
+                                <td>Pagination, Deduplication</td>
+                            </tr>
+                            <tr>
+                                <td><strong>RANK()</strong></td>
+                                <td>✅ Yes</td>
+                                <td>Yes (gaps)</td>
+                                <td>1, 2, 2, 4</td>
+                                <td>Sports Rankings, Competitions</td>
+                            </tr>
+                            <tr>
+                                <td><strong>DENSE_RANK()</strong></td>
+                                <td>✅ Yes</td>
+                                <td>No (continuous)</td>
+                                <td>1, 2, 2, 3</td>
+                                <td>Category Rankings, Grades</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="practical-analogies">
+                    <h4>👉 Easy Analogies</h4>
+                    <div class="analogies-grid">
+                        <div class="analogy-card">
+                            <h5>🎓 ROW_NUMBER()</h5>
+                            <p><strong>Student Roll Numbers:</strong> Every student gets a unique roll number in class, even if they have the same name.</p>
+                        </div>
+                        
+                        <div class="analogy-card">
+                            <h5>🏃‍♂️ RANK()</h5>
+                            <p><strong>Race Prizes:</strong> If 2 people tie for 2nd place, both get 2nd prize, but the next person gets 4th place (3rd is skipped).</p>
+                        </div>
+                        
+                        <div class="analogy-card">
+                            <h5>🏆 DENSE_RANK()</h5>
+                            <p><strong>Grade Levels:</strong> If 2 students tie for Grade A, both get Grade A, but the next grade is Grade B (no skipping).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="real-world-scenarios">
+                    <h4>🌍 Real-World Scenarios</h4>
+                    
+                    <div class="scenarios-grid">
+                        <div class="scenario-card">
+                            <h5>📄 When to use ROW_NUMBER()</h5>
+                            <ul>
+                                <li><strong>Pagination:</strong> Creating page numbers for web results</li>
+                                <li><strong>Deduplication:</strong> Removing duplicate records</li>
+                                <li><strong>Sequential Processing:</strong> Assigning unique identifiers</li>
+                                <li><strong>Report Line Numbers:</strong> Adding row numbers to reports</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="scenario-card">
+                            <h5>🏆 When to use RANK()</h5>
+                            <ul>
+                                <li><strong>Sports Leaderboards:</strong> Tournament rankings with ties</li>
+                                <li><strong>Sales Performance:</strong> Top salespeople with tied performance</li>
+                                <li><strong>Academic Rankings:</strong> Student rankings by GPA</li>
+                                <li><strong>Competition Results:</strong> Where ties affect subsequent positions</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="scenario-card">
+                            <h5>🎯 When to use DENSE_RANK()</h5>
+                            <ul>
+                                <li><strong>Category Rankings:</strong> Product ratings within categories</li>
+                                <li><strong>Grade Distributions:</strong> Student grades (A, B, C)</li>
+                                <li><strong>Priority Levels:</strong> Task priorities (High, Medium, Low)</li>
+                                <li><strong>Continuous Scoring:</strong> Where gaps don't make sense</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
                 <h3>Entity Framework Core</h3>
                 <div class="ef-content">
                     <h4>Code First Approach</h4>
