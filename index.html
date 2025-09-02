@@ -1131,50 +1131,519 @@ public class Invoice
             </div>
 
             <div class="concept-card">
-                <h3>Generational Garbage Collection</h3>
+                <h3>Generational Garbage Collection Deep Dive</h3>
+                <div class="gc-concept-intro">
+                    <p>The .NET GC is <strong>generational</strong>—it divides the heap into three generations to manage objects based on their lifespan. The core principle: <em>most objects die young, so clean them up quickly and often; older objects are collected less frequently.</em></p>
+                </div>
+
                 <div class="gc-generations">
                     <div class="generation">
                         <h4>Generation 0 (Gen 0)</h4>
                         <div class="gen-content">
-                            <p><strong>Newly created objects</strong> (short-lived)</p>
-                            <ul>
-                                <li>Temporary variables</li>
-                                <li>Request/response objects</li>
-                                <li>Method-scoped objects</li>
-                            </ul>
-                            <p><strong>Collection:</strong> Most frequent, fastest</p>
+                            <p><strong>Where new objects are allocated</strong> (short-lived)</p>
+                            <div class="gen-details">
+                                <h5>Enterprise Examples:</h5>
+                                <ul>
+                                    <li>Temporary data structures in web API calls</li>
+                                    <li>Request/response models</li>
+                                    <li>String concatenations, quick calculations</li>
+                                    <li>Local variables in methods</li>
+                                </ul>
+                                <div class="gen-behavior">
+                                    <strong>GC Behavior:</strong> Most frequent, fastest collections. Triggered when Gen 0 fills up.
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="generation">
                         <h4>Generation 1 (Gen 1)</h4>
                         <div class="gen-content">
-                            <p><strong>Objects surviving one collection</strong></p>
-                            <ul>
-                                <li>Medium-lived objects</li>
-                                <li>Objects that survived Gen 0 cleanup</li>
-                            </ul>
-                            <p><strong>Collection:</strong> Less frequent</p>
+                            <p><strong>Buffer zone</strong> between short-lived and long-lived objects</p>
+                            <div class="gen-details">
+                                <h5>Enterprise Examples:</h5>
+                                <ul>
+                                    <li>Collections/data structures living across a few requests</li>
+                                    <li>Objects used during batch processing</li>
+                                    <li>Workflow step objects</li>
+                                    <li>Session-scoped data</li>
+                                </ul>
+                                <div class="gen-behavior">
+                                    <strong>GC Behavior:</strong> Less frequent than Gen 0, more frequent than Gen 2.
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="generation">
                         <h4>Generation 2 (Gen 2)</h4>
                         <div class="gen-content">
-                            <p><strong>Long-lived objects</strong></p>
-                            <ul>
-                                <li>Singletons</li>
-                                <li>Application-wide caches</li>
-                                <li>Static objects</li>
-                            </ul>
-                            <p><strong>Collection:</strong> Least frequent, most expensive</p>
+                            <p><strong>Long-lived objects</strong> (application lifetime)</p>
+                            <div class="gen-details">
+                                <h5>Enterprise Examples:</h5>
+                                <ul>
+                                    <li>Application-wide singletons</li>
+                                    <li>Configuration caches, logging services</li>
+                                    <li>Static/global objects</li>
+                                    <li>Large in-memory caches, connection pools</li>
+                                </ul>
+                                <div class="gen-behavior">
+                                    <strong>GC Behavior:</strong> Least frequent (full GC), most expensive in terms of pause time.
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="object-promotion">
+                    <h4>📈 Object Promotion Flow</h4>
+                    <div class="promotion-flow">
+                        <div class="promotion-step">
+                            <div class="step-box">New Object</div>
+                            <div class="arrow">→</div>
+                            <div class="step-box gen0">Gen 0</div>
+                        </div>
+                        <div class="promotion-step">
+                            <div class="step-box gen0">Survives Collection</div>
+                            <div class="arrow">→</div>
+                            <div class="step-box gen1">Gen 1</div>
+                        </div>
+                        <div class="promotion-step">
+                            <div class="step-box gen1">Survives Again</div>
+                            <div class="arrow">→</div>
+                            <div class="step-box gen2">Gen 2</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>How GC Traversal Actually Works</h3>
+                <div class="gc-traversal-key">
+                    <h4>🔑 Key Point</h4>
+                    <p>Garbage Collection does <strong>NOT always traverse all generations</strong> every time. It usually only collects the youngest generation that's full (typically Gen 0), unless memory pressure requires checking older generations.</p>
+                </div>
+
+                <div class="gc-collection-types">
+                    <div class="collection-type">
+                        <h4>Minor Collection (Gen 0 Only)</h4>
+                        <div class="collection-scenario">
+                            <h5>When: Gen 0 is full</h5>
+                            <div class="collection-steps">
+                                <div class="step">1. GC scans Gen 0 for live objects</div>
+                                <div class="step">2. Dead objects are collected (memory reclaimed)</div>
+                                <div class="step">3. Surviving objects are promoted to Gen 1</div>
+                                <div class="step">4. Gen 1 and Gen 2 are <strong>not touched</strong></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="collection-type">
+                        <h4>Gen 1 Collection (Gen 0 + Gen 1)</h4>
+                        <div class="collection-scenario">
+                            <h5>When: Not enough memory after Gen 0 collection</h5>
+                            <div class="collection-steps">
+                                <div class="step">1. GC traverses Gen 0 and Gen 1</div>
+                                <div class="step">2. Collects dead objects in both generations</div>
+                                <div class="step">3. Live objects in Gen 1 promoted to Gen 2</div>
+                                <div class="step">4. Gen 2 remains untouched</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="collection-type">
+                        <h4>Full Collection (All Generations)</h4>
+                        <div class="collection-scenario">
+                            <h5>When: High memory pressure or explicit request</h5>
+                            <div class="collection-steps">
+                                <div class="step">1. GC traverses all three generations</div>
+                                <div class="step">2. Collects dead objects across entire heap</div>
+                                <div class="step">3. Most expensive operation</div>
+                                <div class="step">4. Longest application pause</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gc-example-scenario">
+                    <h4>🎯 Real-World Example</h4>
+                    <div class="scenario-description">
+                        <p><strong>Starting State:</strong></p>
+                        <ul>
+                            <li>Gen 0: 10 objects (8 dead, 2 alive)</li>
+                            <li>Gen 1: 5 objects (2 dead, 3 alive)</li>
+                            <li>Gen 2: 3 objects (all alive)</li>
+                        </ul>
+                    </div>
+
+                    <div class="gc-results-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Generation</th>
+                                    <th>Before GC</th>
+                                    <th>After Minor GC</th>
+                                    <th>After Gen 1 GC</th>
+                                    <th>After Full GC</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Gen 0</strong></td>
+                                    <td>10 objects</td>
+                                    <td>0 (2 promoted to Gen 1)</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Gen 1</strong></td>
+                                    <td>5 objects</td>
+                                    <td>7 (5 + 2 from Gen 0)</td>
+                                    <td>0 (3 promoted to Gen 2)</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Gen 2</strong></td>
+                                    <td>3 objects</td>
+                                    <td>3 (unchanged)</td>
+                                    <td>6 (3 + 3 from Gen 1)</td>
+                                    <td>6 (if all still alive)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="gc-frequency-summary">
+                    <h4>📊 Collection Frequency Summary</h4>
+                    <div class="frequency-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Collection Type</th>
+                                    <th>What's Collected</th>
+                                    <th>When It Happens</th>
+                                    <th>Performance Impact</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Gen 0 (Minor)</strong></td>
+                                    <td>Only Gen 0</td>
+                                    <td>Most frequent</td>
+                                    <td>Minimal pause</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Gen 1</strong></td>
+                                    <td>Gen 0 + Gen 1</td>
+                                    <td>When Gen 1 fills up</td>
+                                    <td>Short pause</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Gen 2 (Full)</strong></td>
+                                    <td>All generations</td>
+                                    <td>High memory pressure</td>
+                                    <td>Longest pause</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="interview-tips">
+                    <h4>🎯 Interview-Ready Summary</h4>
+                    <p>"In .NET, the GC primarily collects only the youngest generation that's full, not all generations every time. Only when necessary—like under memory pressure—does it traverse and collect higher generations. Surviving objects get promoted to the next generation. This keeps memory management fast and efficient for most enterprise workloads."</p>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Managed vs Unmanaged Resources</h3>
                 
-                <div class="gc-why-generational">
-                    <h4>Why Generational?</h4>
-                    <p><strong>Performance Optimization:</strong> Most objects die young (temporary objects). Focusing on Gen 0 first is faster and more efficient than scanning the entire heap every time.</p>
+                <div class="resource-comparison">
+                    <div class="resource-type managed">
+                        <h4>🔵 Managed Resources</h4>
+                        <div class="resource-details">
+                            <p><strong>Definition:</strong> Objects and memory allocated and controlled by the .NET runtime (CLR)</p>
+                            <h5>Examples:</h5>
+                            <ul>
+                                <li>C# objects (classes, arrays, collections)</li>
+                                <li>Memory on the managed heap</li>
+                                <li>References between .NET objects</li>
+                                <li>String objects, List&lt;T&gt;, custom classes</li>
+                            </ul>
+                            <div class="cleanup-info">
+                                <strong>Cleanup:</strong> Garbage Collector automatically tracks and frees when no longer in use
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="resource-type unmanaged">
+                        <h4>🔴 Unmanaged Resources</h4>
+                        <div class="resource-details">
+                            <p><strong>Definition:</strong> Resources outside the control of the .NET runtime—provided by OS or native libraries</p>
+                            <h5>Examples:</h5>
+                            <ul>
+                                <li>File handles (FileStream opens files)</li>
+                                <li>Database connections (SqlConnection)</li>
+                                <li>Network sockets, window handles</li>
+                                <li>Memory allocated by C/C++ (via interop)</li>
+                                <li>Images, printer handles, COM objects</li>
+                            </ul>
+                            <div class="cleanup-info critical">
+                                <strong>Cleanup:</strong> Must be explicitly released using IDisposable pattern
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="why-gc-cant-cleanup">
+                    <h4>❓ Why Can't GC Clean Up Everything Automatically?</h4>
+                    <div class="gc-limitations">
+                        <div class="limitation">
+                            <h5>1. Lack of Awareness</h5>
+                            <p>The CLR and GC <strong>don't know</strong> what native resources your object is holding or how to release them. Only you know how to close a Windows file handle via WinAPI.</p>
+                        </div>
+                        
+                        <div class="limitation">
+                            <h5>2. Resource Ownership</h5>
+                            <p>OS-level handles, DB connections, and other resources are <strong>outside .NET's memory model</strong>. Only explicit calls like <code>.Close()</code> or <code>.Dispose()</code> can tell the OS to release them.</p>
+                        </div>
+                        
+                        <div class="limitation">
+                            <h5>3. Timing and Predictability</h5>
+                            <p>GC is <strong>non-deterministic</strong>—it may run minutes after an object is no longer referenced. Unmanaged resources are usually <strong>scarce and critical</strong>, so they must be released immediately to avoid:</p>
+                            <ul>
+                                <li>File locks preventing other processes</li>
+                                <li>Database connection pool exhaustion</li>
+                                <li>Orphaned sockets and memory leaks</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="idisposable-pattern">
+                    <h4>🛠️ The IDisposable Pattern</h4>
+                    <div class="pattern-explanation">
+                        <p>Types that hold unmanaged resources (e.g., FileStream, SqlConnection) implement <code>IDisposable</code>. When you call <code>.Dispose()</code> or use a <code>using</code> block, the resource is released immediately.</p>
+                    </div>
+
+                    <div class="code-example">
+                        <pre><code>// Deterministic cleanup with using statement
+using (var fileStream = new FileStream("data.txt", FileMode.Open))
+{
+    // File handle is automatically disposed
+    // even if an exception occurs
+} // Dispose() called here automatically
+
+// C# 8+ using declarations
+using var connection = new SqlConnection(connectionString);
+await connection.OpenAsync();
+// Disposed at end of scope automatically</code></pre>
+                    </div>
+
+                    <div class="finalizer-warning">
+                        <h5>⚠️ Finalizers as Backup</h5>
+                        <p>If you forget to dispose, a <strong>finalizer</strong> (<code>~ClassName()</code>) might release the resource eventually, but this is slow and unreliable—<strong>always dispose deterministically</strong>.</p>
+                    </div>
+                </div>
+
+                <div class="resource-comparison-table">
+                    <h4>📊 Resource Comparison</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aspect</th>
+                                <th>Managed Resource</th>
+                                <th>Unmanaged Resource</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Example</strong></td>
+                                <td>List&lt;T&gt;, string, custom class</td>
+                                <td>File handle, DB connection, socket, image</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cleaned by</strong></td>
+                                <td>Garbage Collector</td>
+                                <td>Must be disposed explicitly (Dispose())</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Memory only?</strong></td>
+                                <td>Yes</td>
+                                <td>No—often OS or hardware resource</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Deterministic?</strong></td>
+                                <td>No (GC runs when it wants)</td>
+                                <td>Yes, with using or Dispose()</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Performance Impact</strong></td>
+                                <td>Minimal (handled by GC)</td>
+                                <td>Critical (resource leaks if not disposed)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Singletons and Garbage Collection</h3>
+                
+                <div class="singleton-gc-intro">
+                    <p>Understanding how <strong>singleton services in Dependency Injection</strong> interact with garbage collection is crucial for enterprise applications with long-running processes.</p>
+                </div>
+
+                <div class="singleton-lifecycle">
+                    <h4>🔄 Singleton Lifecycle in DI</h4>
+                    <div class="lifecycle-explanation">
+                        <p>In ASP.NET Core DI, a <strong>singleton</strong> service is created <strong>once per application lifetime</strong> and shared everywhere it's injected.</p>
+                        
+                        <div class="code-example">
+                            <pre><code>// Registration
+services.AddSingleton&lt;IMyService, MyService&gt;();
+
+// The same instance is injected everywhere</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="gc-singleton-interaction">
+                        <h5>How GC Handles Singleton Services</h5>
+                        <div class="interaction-points">
+                            <div class="interaction-point">
+                                <strong>1. Strong Reference:</strong> The DI container holds a strong reference to the singleton instance for the entire app lifetime
+                            </div>
+                            <div class="interaction-point">
+                                <strong>2. GC Protection:</strong> As long as the container is alive (app is running), the singleton <strong>cannot be garbage collected</strong>
+                            </div>
+                            <div class="interaction-point">
+                                <strong>3. Memory Pinning:</strong> GC only collects objects with no live references—the DI container "pins" the singleton in memory
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="singleton-shutdown">
+                    <h4>🔚 Application Shutdown Process</h4>
+                    <div class="shutdown-steps">
+                        <div class="shutdown-step">
+                            <h5>1. DI Container Disposal</h5>
+                            <p>When the application shuts down, the DI container itself is disposed</p>
+                        </div>
+                        <div class="shutdown-step">
+                            <h5>2. Singleton Cleanup</h5>
+                            <p>All singleton services that implement <code>IDisposable</code> have their <code>Dispose()</code> method called</p>
+                        </div>
+                        <div class="shutdown-step">
+                            <h5>3. GC Eligibility</h5>
+                            <p>After disposal, references are dropped and the singleton becomes eligible for garbage collection</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="singleton-example">
+                    <h4>💡 Enterprise Example</h4>
+                    <div class="code-example">
+                        <pre><code>public class DatabaseConnectionManager : IDisposable
+{
+    private readonly SqlConnection _connection;
+    private readonly ILogger&lt;DatabaseConnectionManager&gt; _logger;
+
+    public DatabaseConnectionManager(IConfiguration config, ILogger&lt;DatabaseConnectionManager&gt; logger)
+    {
+        _logger = logger;
+        _connection = new SqlConnection(config.GetConnectionString("Default"));
+        _connection.Open();
+        _logger.LogInformation("Database connection opened for application lifetime");
+    }
+
+    public async Task&lt;T&gt; ExecuteQueryAsync&lt;T&gt;(string query)
+    {
+        // Use the long-lived connection
+        // This connection stays open for the entire app lifetime
+        return await SomeQueryMethod&lt;T&gt;(query);
+    }
+
+    public void Dispose()
+    {
+        _logger.LogInformation("Disposing database connection at application shutdown");
+        _connection?.Dispose();
+    }
+}
+
+// Registration
+services.AddSingleton&lt;DatabaseConnectionManager&gt;();</code></pre>
+                    </div>
+                    
+                    <div class="example-explanation">
+                        <ul>
+                            <li>When the app starts, one instance is created and connection opened</li>
+                            <li>The GC cannot collect this service until app shutdown</li>
+                            <li>At shutdown, <code>Dispose()</code> is called, DB connection is released</li>
+                            <li>Only then can GC clean up the object</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="singleton-best-practices">
+                    <h4>⚠️ Enterprise Considerations</h4>
+                    <div class="considerations">
+                        <div class="consideration">
+                            <h5>Resource Usage</h5>
+                            <p><strong>Don't hold large objects</strong> in a singleton (e.g., huge caches) unless you mean for them to live for the whole app's lifetime.</p>
+                        </div>
+                        
+                        <div class="consideration">
+                            <h5>Memory Leaks</h5>
+                            <p>If a singleton holds references to other objects (or events), those will also stay alive as long as the singleton lives. Avoid using singletons for request- or user-specific data.</p>
+                        </div>
+                        
+                        <div class="consideration">
+                            <h5>Dispose Pattern</h5>
+                            <p>If your singleton holds unmanaged resources, <strong>always implement IDisposable</strong> and release those resources in <code>Dispose()</code>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="di-lifetime-comparison">
+                    <h4>📊 DI Lifetime Comparison</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Lifetime</th>
+                                <th>Singleton Service</th>
+                                <th>Regular Object</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Lifetime</strong></td>
+                                <td>App-wide (held by DI container)</td>
+                                <td>Variable (local, transient)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Collected by GC</strong></td>
+                                <td>Only after DI container disposed</td>
+                                <td>When no references exist</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dispose() Called</strong></td>
+                                <td>At app shutdown (if IDisposable)</td>
+                                <td>When out of scope (if used in using)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Memory Impact</strong></td>
+                                <td>Persistent for entire app lifetime</td>
+                                <td>Released when scope ends</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="interview-tips">
+                    <h4>🎯 Interview-Ready Summary</h4>
+                    <p>"Singleton DI services in .NET Core live for the entire application lifetime because the DI container holds a strong reference to them. The garbage collector can't reclaim their memory until the application stops and the DI container is disposed, at which point any IDisposable singletons are also disposed. That's why it's crucial to use singletons only for truly shared resources and to clean up unmanaged resources properly in Dispose()."</p>
                 </div>
             </div>
 
