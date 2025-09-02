@@ -2081,27 +2081,291 @@ app.UseMiddleware&lt;GlobalExceptionMiddleware&gt;();</code></pre>
             </div>
             
             <div class="concept-card">
-                <h3>Design Patterns</h3>
-                <div class="patterns">
+                <h3>Design Patterns in Enterprise .NET</h3>
+                
+                <div class="pattern-categories">
+                    <h4>📋 Pattern Categories</h4>
+                    <div class="categories-grid">
+                        <div class="pattern-category creational">
+                            <h5>Creational Patterns</h5>
+                            <p><strong>Problem:</strong> How objects are created and instantiated</p>
+                            <p><strong>Purpose:</strong> Provide flexible solutions for object creation</p>
+                            <div class="category-examples">
+                                <strong>Examples:</strong> Factory, Singleton, Builder, Abstract Factory
+                            </div>
+                            <div class="enterprise-use">
+                                <strong>Enterprise Use:</strong> Complex object creation, dependency injection, plugin systems
+                            </div>
+                        </div>
+                        
+                        <div class="pattern-category structural">
+                            <h5>Structural Patterns</h5>
+                            <p><strong>Problem:</strong> How objects are composed into larger structures</p>
+                            <p><strong>Purpose:</strong> Build relationships between classes/objects</p>
+                            <div class="category-examples">
+                                <strong>Examples:</strong> Adapter, Decorator, Facade, Proxy
+                            </div>
+                            <div class="enterprise-use">
+                                <strong>Enterprise Use:</strong> API integration, extending functionality, simplifying subsystems
+                            </div>
+                        </div>
+                        
+                        <div class="pattern-category behavioral">
+                            <h5>Behavioral Patterns</h5>
+                            <p><strong>Problem:</strong> How objects communicate and interact</p>
+                            <p><strong>Purpose:</strong> Manage algorithms, relationships, and responsibilities</p>
+                            <div class="category-examples">
+                                <strong>Examples:</strong> Observer, Strategy, Command, Mediator
+                            </div>
+                            <div class="enterprise-use">
+                                <strong>Enterprise Use:</strong> Event handling, workflow management, communication decoupling
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>CQRS (Command Query Responsibility Segregation)</h3>
+                
+                <div class="cqrs-definition">
+                    <p><strong>Core Idea:</strong> Separate the models for reading (queries) and writing (commands) data.</p>
+                    <div class="cqrs-benefits">
+                        <div class="benefit">
+                            <h6>📈 Scalability & Performance</h6>
+                            <p>Optimize, scale, or cache read and write workloads independently</p>
+                        </div>
+                        <div class="benefit">
+                            <h6>🎯 Simplified Models</h6>
+                            <p>Command models focus on business rules, query models optimize for reads</p>
+                        </div>
+                        <div class="benefit">
+                            <h6>🔧 Flexibility</h6>
+                            <p>Different data stores for reads/writes (SQL for writes, NoSQL for reads)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cqrs-example">
+                    <h5>🏢 Enterprise Example: Order Management</h5>
+                    
+                    <div class="cqrs-comparison">
+                        <div class="traditional-approach">
+                            <h6>Without CQRS (Traditional)</h6>
+                            <div class="code-example">
+                                <pre><code>public class OrderService
+{
+    public void PlaceOrder(Order order) { /* Save to DB */ }
+    public OrderDto GetOrderDetails(int id) { /* Read from DB */ }
+    
+    // Same models and DB schema for both operations
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="cqrs-approach">
+                            <h6>With CQRS</h6>
+                            <div class="code-example">
+                                <pre><code>// Command Side - Handles writes
+public class PlaceOrderHandler : ICommandHandler&lt;PlaceOrderCommand&gt;
+{
+    public async Task Handle(PlaceOrderCommand command)
+    {
+        // Validation, business logic, save to write DB
+        var order = new Order(command.CustomerId, command.Items);
+        await _orderRepository.SaveAsync(order);
+        
+        // Publish event for read side update
+        await _eventBus.PublishAsync(new OrderPlacedEvent(order));
+    }
+}
+
+// Query Side - Handles reads
+public class GetOrderDetailsHandler : IQueryHandler&lt;GetOrderDetailsQuery, OrderDetailsDto&gt;
+{
+    public async Task&lt;OrderDetailsDto&gt; Handle(GetOrderDetailsQuery query)
+    {
+        // Read from optimized read DB/cache
+        return await _readRepository.GetOrderDetailsAsync(query.OrderId);
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cqrs-when-to-use">
+                    <h5>⚖️ When to Use CQRS</h5>
+                    <div class="usage-guidelines">
+                        <div class="use-cqrs">
+                            <h6>✅ Consider CQRS When:</h6>
+                            <ul>
+                                <li>Complex business logic on writes, simple high-performance reads</li>
+                                <li>Need to scale reads and writes differently</li>
+                                <li>Reporting and transactional workloads must not interfere</li>
+                                <li>High-traffic applications (banking, e-commerce, reporting)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="avoid-cqrs">
+                            <h6>❌ Do NOT Use CQRS For:</h6>
+                            <ul>
+                                <li>Small, simple CRUD applications</li>
+                                <li>Applications without complex business logic</li>
+                                <li>When read/write patterns are similar</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cqrs-related-patterns">
+                    <h5>🔗 Related Patterns</h5>
+                    <div class="related-patterns-grid">
+                        <div class="related-pattern">
+                            <h6>CQS (Command Query Separation)</h6>
+                            <p>CQRS extends CQS from method level to architectural level</p>
+                        </div>
+                        <div class="related-pattern">
+                            <h6>Event Sourcing</h6>
+                            <p>Often paired with CQRS - commands generate events, queries replay them</p>
+                        </div>
+                        <div class="related-pattern">
+                            <h6>Mediator Pattern</h6>
+                            <p>Commands and queries dispatched via mediator (MediatR in .NET)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Factory Pattern</h3>
+                
+                <div class="factory-definition">
+                    <p><strong>Purpose:</strong> Provides an interface for creating objects, but allows logic to decide which specific class to instantiate.</p>
+                    <div class="factory-memory-aid">
+                        <h5>💡 How to Remember</h5>
+                        <p><em>"Don't use `new` everywhere—let a factory decide which object you get."</em></p>
+                    </div>
+                </div>
+
+                <div class="factory-example">
+                    <h5>📧 Enterprise Example: Notification System</h5>
+                    
+                    <div class="factory-comparison">
+                        <div class="without-factory">
+                            <h6>❌ Without Factory Pattern</h6>
+                            <div class="code-example">
+                                <pre><code>// Bad: Code knows about all types!
+INotificationSender sender;
+if (type == "email")
+    sender = new EmailSender();
+else if (type == "sms")
+    sender = new SmsSender();
+else if (type == "push")
+    sender = new PushNotificationSender();
+
+// Hard to add new types, lots of repeated code</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="with-factory">
+                            <h6>✅ With Factory Pattern</h6>
+                            <div class="code-example">
+                                <pre><code>public interface INotificationSender
+{
+    Task SendAsync(string to, string message);
+}
+
+// Factory
+public class NotificationSenderFactory
+{
+    private readonly IServiceProvider _serviceProvider;
+    
+    public INotificationSender GetSender(NotificationType type)
+    {
+        return type switch
+        {
+            NotificationType.Email => _serviceProvider.GetService&lt;EmailSender&gt;(),
+            NotificationType.Sms => _serviceProvider.GetService&lt;SmsSender&gt;(),
+            NotificationType.Push => _serviceProvider.GetService&lt;PushNotificationSender&gt;(),
+            _ => throw new NotSupportedException($"Type {type} not supported")
+        };
+    }
+}
+
+// Usage in application
+var sender = _notificationFactory.GetSender(user.PreferredNotificationType);
+await sender.SendAsync(user.ContactInfo, "Welcome!");</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="factory-benefits">
+                    <h5>🎯 Key Benefits</h5>
+                    <ul>
+                        <li><strong>Centralizes object creation</strong> logic - easy to update, maintain, extend</li>
+                        <li><strong>Loosely couples code</strong> from concrete classes</li>
+                        <li><strong>Ideal for plugins</strong>, configurable components, runtime decisions</li>
+                        <li><strong>Integrates well with DI</strong> containers in .NET applications</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Common Enterprise Patterns</h3>
+                
+                <div class="patterns-grid">
                     <div class="pattern">
-                        <h4>Repository Pattern</h4>
+                        <h5>Repository Pattern</h5>
                         <p>Decouples data access logic from business logic</p>
                         <div class="code-example">
-                            <pre><code>public interface IUserRepository {
+                            <pre><code>public interface IUserRepository 
+{
     Task&lt;User&gt; GetByIdAsync(int id);
     Task&lt;IEnumerable&lt;User&gt;&gt; GetAllAsync();
     Task AddAsync(User user);
+    Task UpdateAsync(User user);
+    Task DeleteAsync(int id);
 }</code></pre>
                         </div>
                     </div>
+                    
                     <div class="pattern">
-                        <h4>Unit of Work</h4>
+                        <h5>Unit of Work</h5>
                         <p>Maintains transaction consistency across multiple repositories</p>
+                        <div class="code-example">
+                            <pre><code>public interface IUnitOfWork : IDisposable
+{
+    IUserRepository Users { get; }
+    IOrderRepository Orders { get; }
+    Task&lt;int&gt; SaveChangesAsync();
+    Task BeginTransactionAsync();
+    Task CommitTransactionAsync();
+}</code></pre>
+                        </div>
                     </div>
+
                     <div class="pattern">
-                        <h4>Factory Pattern</h4>
-                        <p>Creates objects without specifying exact classes - useful in workflow engines</p>
+                        <h5>Strategy Pattern</h5>
+                        <p>Selects algorithms at runtime - perfect for business rules</p>
+                        <div class="code-example">
+                            <pre><code>public interface IPricingStrategy
+{
+    decimal CalculatePrice(Order order);
+}
+
+public class VipCustomerPricing : IPricingStrategy
+{
+    public decimal CalculatePrice(Order order) => order.Total * 0.9m; // 10% discount
+}</code></pre>
+                        </div>
                     </div>
+                </div>
+
+                <div class="interview-tips">
+                    <h4>🎯 Interview-Ready Summary</h4>
+                    <p>"Design patterns are categorized into creational (object creation), structural (object composition), and behavioral (object communication) to help choose the right solution. CQRS separates read and write operations for scalability in complex systems, while the Factory pattern centralizes object creation logic. I use these patterns to build maintainable, extensible enterprise applications where business requirements and technical complexity demand flexible, decoupled architectures."</p>
                 </div>
             </div>
 
