@@ -197,6 +197,128 @@ main {
 }
 
 /* SOLID Principles */
+.solid-intro {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    font-style: italic;
+    text-align: center;
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #f39c12;
+}
+
+.solid-principle-detailed {
+    background-color: #fff;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    border-radius: 10px;
+    border-left: 5px solid #f39c12;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.solid-principle-detailed:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.solid-principle-detailed h4 {
+    color: #f39c12;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.principle-definition {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 8px;
+    border-left: 4px solid #f39c12;
+}
+
+.enterprise-example {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    border-left: 4px solid #28a745;
+}
+
+.enterprise-example h5 {
+    color: #28a745;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.enterprise-example ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.enterprise-example li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.enterprise-example code {
+    background-color: #e9ecef;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    color: #e83e8c;
+    font-weight: 600;
+}
+
+.common-pitfall {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-left: 4px solid #fdcb6e;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    color: #856404;
+}
+
+.interview-tips {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    margin-top: 2rem;
+}
+
+.interview-tips h4 {
+    color: white;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.interview-tips ul {
+    list-style: none;
+    padding: 0;
+}
+
+.interview-tips li {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+    position: relative;
+    line-height: 1.6;
+}
+
+.interview-tips li:before {
+    content: "💡";
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+/* Legacy SOLID styles for backward compatibility */
 .solid-principles {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));

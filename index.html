@@ -121,32 +121,142 @@ public class PaypalGateway : IPaymentGateway { ... }</code></pre>
 
             <div class="concept-card">
                 <h3>SOLID Principles</h3>
-                <div class="solid-principles">
-                    <div class="principle">
-                        <h4>S - Single Responsibility</h4>
-                        <p>Each class should have only one reason to change.</p>
-                        <p><strong>Example:</strong> OrderManager, OrderRepository, OrderEmailNotifier - separate responsibilities.</p>
+                <p class="solid-intro">These five design principles are the backbone of maintainable, extensible, and testable enterprise .NET applications.</p>
+                
+                <div class="solid-principle-detailed">
+                    <h4>1. Single Responsibility Principle (SRP)</h4>
+                    <p class="principle-definition"><strong>"Every class should have one, and only one, reason to change."</strong></p>
+                    
+                    <div class="enterprise-example">
+                        <h5>Enterprise Example: Leave Management System</h5>
+                        <ul>
+                            <li><code>LeaveRequestService</code> - Handles business logic (validations, balance checks)</li>
+                            <li><code>LeaveRequestRepository</code> - Database operations (CRUD for leave requests)</li>
+                            <li><code>LeaveNotificationService</code> - Notifications (emails/SMS for approvals)</li>
+                        </ul>
+                        <p><strong>Why:</strong> If business rules change, only modify LeaveRequestService. If DB schema changes, only the repository is affected.</p>
                     </div>
-                    <div class="principle">
-                        <h4>O - Open/Closed</h4>
-                        <p>Open for extension, closed for modification.</p>
-                        <p><strong>Example:</strong> Add new salary calculation by creating new class, not modifying existing one.</p>
+                    
+                    <div class="common-pitfall">
+                        <strong>⚠️ Common Pitfall:</strong> Classes doing everything—business logic, data access, email sending—become impossible to maintain and test.
                     </div>
-                    <div class="principle">
-                        <h4>L - Liskov Substitution</h4>
-                        <p>Derived classes should be substitutable for base classes.</p>
-                        <p><strong>Example:</strong> AdminUser should work wherever User is expected.</p>
+                </div>
+
+                <div class="solid-principle-detailed">
+                    <h4>2. Open/Closed Principle (OCP)</h4>
+                    <p class="principle-definition"><strong>"Software entities should be open for extension but closed for modification."</strong></p>
+                    
+                    <div class="enterprise-example">
+                        <h5>Enterprise Example: Invoice Generation Module</h5>
+                        <div class="code-example">
+                            <pre><code>public interface IInvoiceGenerator { 
+    void Generate(InvoiceData data); 
+}
+
+public class GSTInvoiceGenerator : IInvoiceGenerator { 
+    public void Generate(InvoiceData data) { /* GST logic */ }
+}
+
+public class ExportInvoiceGenerator : IInvoiceGenerator { 
+    public void Generate(InvoiceData data) { /* Export logic */ }
+}</code></pre>
+                        </div>
+                        <p><strong>Why:</strong> Add new invoice types without touching existing code—prevents regressions.</p>
                     </div>
-                    <div class="principle">
-                        <h4>I - Interface Segregation</h4>
-                        <p>No client should depend on methods it doesn't use.</p>
-                        <p><strong>Example:</strong> Split large IUser into ILogin, IRegister, IProfile.</p>
+                    
+                    <div class="common-pitfall">
+                        <strong>⚠️ Common Pitfall:</strong> Giant switch/case statements—every new type requires editing old code, risking bugs.
                     </div>
-                    <div class="principle">
-                        <h4>D - Dependency Inversion</h4>
-                        <p>Depend on abstractions, not concretions.</p>
-                        <p><strong>Example:</strong> Controllers receive IUserService, not concrete UserService.</p>
+                </div>
+
+                <div class="solid-principle-detailed">
+                    <h4>3. Liskov Substitution Principle (LSP)</h4>
+                    <p class="principle-definition"><strong>"Subclasses should be substitutable for their base class without breaking client code."</strong></p>
+                    
+                    <div class="enterprise-example">
+                        <h5>Enterprise Example: Banking System</h5>
+                        <div class="code-example">
+                            <pre><code>List&lt;Account&gt; accounts = new() { 
+    new SavingsAccount(), 
+    new CurrentAccount() 
+};
+
+foreach(var acc in accounts) 
+    acc.Withdraw(amount); // Works for all account types</code></pre>
+                        </div>
+                        <p><strong>Why:</strong> Prevents surprises—subclasses maintain the parent's contract.</p>
                     </div>
+                    
+                    <div class="common-pitfall">
+                        <strong>⚠️ Common Pitfall:</strong> Derived classes that throw exceptions or do nothing—violates LSP.
+                    </div>
+                </div>
+
+                <div class="solid-principle-detailed">
+                    <h4>4. Interface Segregation Principle (ISP)</h4>
+                    <p class="principle-definition"><strong>"Clients should not be forced to depend on interfaces they do not use."</strong></p>
+                    
+                    <div class="enterprise-example">
+                        <h5>Enterprise Example: User Management Module</h5>
+                        <div class="code-example">
+                            <pre><code>// Instead of one giant IUserService with 30+ methods:
+public interface IAuthenticationService { 
+    void Login(); 
+    void Logout(); 
+}
+
+public interface IProfileService { 
+    void UpdateProfile(); 
+    UserProfile GetProfile(); 
+}</code></pre>
+                        </div>
+                        <p><strong>Why:</strong> Admin panel only needs IProfileService, login page only needs IAuthenticationService.</p>
+                    </div>
+                    
+                    <div class="common-pitfall">
+                        <strong>⚠️ Common Pitfall:</strong> Fat interfaces where changes for one client break others.
+                    </div>
+                </div>
+
+                <div class="solid-principle-detailed">
+                    <h4>5. Dependency Inversion Principle (DIP)</h4>
+                    <p class="principle-definition"><strong>"High-level modules should not depend on low-level modules, but on abstractions."</strong></p>
+                    
+                    <div class="enterprise-example">
+                        <h5>Enterprise Example: Order Processing System</h5>
+                        <div class="code-example">
+                            <pre><code>public class OrderService
+{
+    private readonly IPaymentGateway _gateway;
+    
+    public OrderService(IPaymentGateway gateway) 
+    { 
+        _gateway = gateway; 
+    }
+    
+    public void ProcessOrder(Order order)
+    {
+        // Can use StripeGateway, PayPalGateway, etc.
+        _gateway.ProcessPayment(order.Total);
+    }
+}</code></pre>
+                        </div>
+                        <p><strong>Why:</strong> Easy testing (mock the gateway), painless vendor switching, supports DI frameworks.</p>
+                    </div>
+                    
+                    <div class="common-pitfall">
+                        <strong>⚠️ Common Pitfall:</strong> Directly instantiating dependencies inside classes—makes code rigid and untestable.
+                    </div>
+                </div>
+
+                <div class="interview-tips">
+                    <h4>🎯 How to Demonstrate SOLID in Interviews</h4>
+                    <ul>
+                        <li><strong>Refactoring:</strong> "We split our monolithic UserService into focused services for auth, profile, and roles to reduce bugs (SRP, ISP)."</li>
+                        <li><strong>Extension:</strong> "When GST laws changed, we just added a new invoice generator—existing code didn't change (OCP)."</li>
+                        <li><strong>Testing:</strong> "Using interfaces for repositories made it easy to mock dependencies for unit testing (DIP)."</li>
+                        <li><strong>Bug Prevention:</strong> "We enforced LSP to fix broken polymorphism in our account hierarchy."</li>
+                    </ul>
                 </div>
             </div>
         </section>
