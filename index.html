@@ -5346,6 +5346,259 @@ public class OrdersIntegrationTests : IClassFixture&lt;WebApplicationFactory&lt;
             </div>
 
             <div class="concept-card">
+                <h3>Step-by-Step Guide to Writing Unit Tests</h3>
+                <div class="concept-content">
+                    <p><strong>Universal Recipe:</strong> Follow these steps for writing any unit test in C# (xUnit, NUnit, or MSTest).</p>
+                    
+                    <div class="example-method">
+                        <h4>🎯 Example Method to Test</h4>
+                        <div class="code-example">
+                            <pre><code>public class CalculatorService
+{
+    public int Add(int a, int b)
+    {
+        if (a &lt; 0 || b &lt; 0)
+            throw new ArgumentException("Only positive numbers allowed");
+
+        return a + b;
+    }
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="test-steps">
+                        <h4>✅ Steps to Write a Unit Test</h4>
+                        
+                        <div class="step">
+                            <h5>Step 1: Identify the System Under Test (SUT)</h5>
+                            <ul>
+                                <li><strong>SUT</strong> = the class/method you want to test</li>
+                                <li>Here: <code>CalculatorService.Add</code></li>
+                                <li>Focus on <em>one method at a time</em> for clarity</li>
+                            </ul>
+                        </div>
+
+                        <div class="step">
+                            <h5>Step 2: Choose the Test Framework</h5>
+                            <ul>
+                                <li><strong>xUnit:</strong> <code>[Fact]</code> for simple tests, <code>[Theory]</code> for parameterized tests</li>
+                                <li><strong>NUnit:</strong> <code>[Test]</code> for tests, <code>[TestCase]</code> for parameters</li>
+                                <li><strong>MSTest:</strong> <code>[TestMethod]</code> for tests, <code>[DataRow]</code> for parameters</li>
+                            </ul>
+                        </div>
+
+                        <div class="step">
+                            <h5>Step 3: Define Test Scenarios</h5>
+                            <p>Think: <strong>normal flow + edge cases + exception cases</strong></p>
+                            <div class="scenarios">
+                                <p>For our CalculatorService.Add example:</p>
+                                <ol>
+                                    <li>✅ Add two positive numbers → returns sum</li>
+                                    <li>❌ If one argument is negative → throws exception</li>
+                                    <li>🔍 Adding 0 should behave correctly</li>
+                                    <li>🔍 Adding large numbers (boundary testing)</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <h5>Step 4: Apply AAA Pattern</h5>
+                            <p>The golden rule of unit testing structure:</p>
+                            <ul>
+                                <li><strong>Arrange:</strong> Set up objects, mocks, inputs</li>
+                                <li><strong>Act:</strong> Call the method under test</li>
+                                <li><strong>Assert:</strong> Check the result matches expectations</li>
+                            </ul>
+                        </div>
+
+                        <div class="step">
+                            <h5>Step 5: Write the Tests</h5>
+                            <div class="code-example">
+                                <pre><code>using Xunit;
+
+public class CalculatorServiceTests
+{
+    [Fact]
+    public void Add_PositiveNumbers_ReturnsSum()
+    {
+        // Arrange
+        var service = new CalculatorService();
+
+        // Act
+        var result = service.Add(2, 3);
+
+        // Assert
+        Assert.Equal(5, result);
+    }
+
+    [Fact]
+    public void Add_NegativeNumber_ThrowsArgumentException()
+    {
+        // Arrange
+        var service = new CalculatorService();
+
+        // Act & Assert (combined for exception testing)
+        Assert.Throws&lt;ArgumentException&gt;(() =&gt; service.Add(-1, 5));
+    }
+
+    [Fact]
+    public void Add_WithZero_ReturnsSameNumber()
+    {
+        // Arrange
+        var service = new CalculatorService();
+
+        // Act
+        var result = service.Add(0, 7);
+
+        // Assert
+        Assert.Equal(7, result);
+    }
+
+    [Theory]
+    [InlineData(1, 1, 2)]
+    [InlineData(10, 15, 25)]
+    [InlineData(100, 200, 300)]
+    public void Add_VariousPositiveNumbers_ReturnsCorrectSum(int a, int b, int expected)
+    {
+        // Arrange
+        var service = new CalculatorService();
+
+        // Act
+        var result = service.Add(a, b);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="universal-recipe">
+                        <h4>📝 Universal Recipe for Any Unit Test</h4>
+                        <p>Follow this checklist whenever you face <strong>any method</strong>:</p>
+                        
+                        <div class="recipe-steps">
+                            <div class="recipe-step">
+                                <h5>1. 🎯 Understand the Method's Responsibility</h5>
+                                <p>What does it compute/do? What are its inputs and outputs?</p>
+                            </div>
+
+                            <div class="recipe-step">
+                                <h5>2. 🔍 Pick the SUT</h5>
+                                <p>Identify the specific class/method you're testing</p>
+                            </div>
+
+                            <div class="recipe-step">
+                                <h5>3. 🔗 Decide Dependencies</h5>
+                                <p>Do you need mocks or is it self-contained? Mock external dependencies only</p>
+                            </div>
+
+                            <div class="recipe-step">
+                                <h5>4. 📋 List Test Cases</h5>
+                                <p>Happy path, edge cases, failure paths, boundary conditions</p>
+                            </div>
+
+                            <div class="recipe-step">
+                                <h5>5. ✍️ Write AAA Structure</h5>
+                                <ul>
+                                    <li><strong>Arrange:</strong> Create SUT and inputs, configure mocks</li>
+                                    <li><strong>Act:</strong> Call the method</li>
+                                    <li><strong>Assert:</strong> Validate output/behavior</li>
+                                </ul>
+                            </div>
+
+                            <div class="recipe-step">
+                                <h5>6. 🔒 Isolate</h5>
+                                <p>Only test this method's logic, not external systems (DB, network)</p>
+                            </div>
+
+                            <div class="recipe-step">
+                                <h5>7. 🏷️ Name Tests Clearly</h5>
+                                <p>Use pattern: <code>MethodName_Scenario_ExpectedResult</code></p>
+                            </div>
+
+                            <div class="recipe-step">
+                                <h5>8. 🎯 Keep One Assertion Per Test</h5>
+                                <p>Ideally one logical assertion per test for clarity and maintainability</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="framework-comparison">
+                        <h4>Test Framework Quick Reference</h4>
+                        <div class="framework-examples">
+                            <div class="framework">
+                                <h5>xUnit (Recommended)</h5>
+                                <div class="code-example">
+                                    <pre><code>[Fact]
+public void Method_Scenario_Result() { }
+
+[Theory]
+[InlineData(1, 2, 3)]
+[InlineData(5, 5, 10)]
+public void Method_WithData_Result(int a, int b, int expected) { }
+
+// Assertions
+Assert.Equal(expected, actual);
+Assert.True(condition);
+Assert.Throws&lt;Exception&gt;(() =&gt; method());</code></pre>
+                                </div>
+                            </div>
+
+                            <div class="framework">
+                                <h5>NUnit</h5>
+                                <div class="code-example">
+                                    <pre><code>[Test]
+public void Method_Scenario_Result() { }
+
+[TestCase(1, 2, 3)]
+[TestCase(5, 5, 10)]
+public void Method_WithData_Result(int a, int b, int expected) { }
+
+// Assertions
+Assert.AreEqual(expected, actual);
+Assert.IsTrue(condition);
+Assert.Throws&lt;Exception&gt;(() =&gt; method());</code></pre>
+                                </div>
+                            </div>
+
+                            <div class="framework">
+                                <h5>MSTest</h5>
+                                <div class="code-example">
+                                    <pre><code>[TestMethod]
+public void Method_Scenario_Result() { }
+
+[DataRow(1, 2, 3)]
+[DataRow(5, 5, 10)]
+[TestMethod]
+public void Method_WithData_Result(int a, int b, int expected) { }
+
+// Assertions
+Assert.AreEqual(expected, actual);
+Assert.IsTrue(condition);
+Assert.ThrowsException&lt;Exception&gt;(() =&gt; method());</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quick-reference">
+                        <h4>🚀 Quick Reference Summary</h4>
+                        <div class="reference-box">
+                            <p><strong>Formula:</strong> Pick method → Identify scenarios → Mock dependencies if needed → Write AAA test cases</p>
+                            <ul>
+                                <li><strong>One test</strong> = One scenario</li>
+                                <li><strong>Clear naming</strong> = Easy maintenance</li>
+                                <li><strong>Mock only direct dependencies</strong> = Proper isolation</li>
+                                <li><strong>Fast execution</strong> = No external systems</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
                 <h3>Testing Best Practices</h3>
                 <div class="concept-content">
                     <h4>Test Structure - AAA Pattern</h4>
