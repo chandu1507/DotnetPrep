@@ -28,6 +28,7 @@
                 <li><a href="#cloud-azure">Cloud & Azure</a></li>
                 <li><a href="#memory-management">Memory Management</a></li>
                 <li><a href="#advanced-concepts">Advanced Concepts</a></li>
+                <li><a href="#unit-testing-mocking">Unit Testing & Mocking</a></li>
                 <li><a href="#best-practices">Best Practices</a></li>
             </ul>
         </div>
@@ -4859,6 +4860,318 @@ app.Run();</code></pre>
             </div>
         </section>
 
+        <section id="unit-testing-mocking" class="topic-section">
+            <h2>Unit Testing & Mocking</h2>
+            
+            <div class="concept-card">
+                <h3>Unit Testing Fundamentals</h3>
+                <div class="concept-content">
+                    <p><strong>Unit Testing</strong> is the practice of testing individual components or methods in isolation from their dependencies.</p>
+                    <p><strong>Key Principles:</strong></p>
+                    <ul>
+                        <li><strong>Isolation:</strong> Test only the unit under test, not its dependencies</li>
+                        <li><strong>Fast:</strong> Tests should run quickly and provide immediate feedback</li>
+                        <li><strong>Repeatable:</strong> Same results every time, regardless of environment</li>
+                        <li><strong>Independent:</strong> Tests should not depend on other tests</li>
+                    </ul>
+                    <div class="example">
+                        <h4>Popular .NET Testing Frameworks:</h4>
+                        <ul>
+                            <li><strong>xUnit:</strong> Modern, extensible framework (Microsoft's choice for .NET Core)</li>
+                            <li><strong>NUnit:</strong> Feature-rich, mature framework</li>
+                            <li><strong>MSTest:</strong> Microsoft's original testing framework</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Mocking with Moq Framework</h3>
+                <div class="concept-content">
+                    <p><strong>Mocking</strong> creates fake implementations of dependencies to isolate the unit under test.</p>
+                    
+                    <h4>Basic Moq Usage</h4>
+                    <div class="code-example">
+                        <pre><code>// Creating mocks
+var mockPayment = new Mock&lt;IPaymentGateway&gt;();
+var mockInventory = new Mock&lt;IInventoryService&gt;();
+
+// Setting up mock behavior
+mockInventory.Setup(x =&gt; x.IsInStock("Book")).Returns(true);
+mockPayment.Setup(x =&gt; x.Charge("Book")).Returns(true);
+
+// Using mocks in test
+var service = new OrderService(mockPayment.Object, mockInventory.Object);
+var result = service.PlaceOrder("Book");
+
+// Verification
+Assert.True(result);
+mockPayment.Verify(x =&gt; x.Charge("Book"), Times.Once);</code></pre>
+                    </div>
+
+                    <h4>Mock Setup Patterns</h4>
+                    <div class="mock-patterns">
+                        <div class="pattern">
+                            <h5>Return Values</h5>
+                            <div class="code-example">
+                                <pre><code>// Simple return
+mock.Setup(x =&gt; x.GetUser(1)).Returns(new User { Id = 1 });
+
+// Conditional returns
+mock.Setup(x =&gt; x.IsValid(It.IsAny&lt;string&gt;()))
+    .Returns((string input) =&gt; !string.IsNullOrEmpty(input));
+
+// Async returns
+mock.Setup(x =&gt; x.GetUserAsync(1))
+    .ReturnsAsync(new User { Id = 1 });</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="pattern">
+                            <h5>Exception Throwing</h5>
+                            <div class="code-example">
+                                <pre><code>mock.Setup(x =&gt; x.ProcessPayment(It.IsAny&lt;decimal&gt;()))
+    .Throws(new PaymentException("Insufficient funds"));</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="pattern">
+                            <h5>Argument Matching</h5>
+                            <div class="code-example">
+                                <pre><code>// Exact match
+mock.Setup(x =&gt; x.GetUser(1)).Returns(user);
+
+// Any value
+mock.Setup(x =&gt; x.GetUser(It.IsAny&lt;int&gt;())).Returns(user);
+
+// Conditional match
+mock.Setup(x =&gt; x.GetUser(It.Is&lt;int&gt;(id =&gt; id &gt; 0))).Returns(user);
+
+// Range match
+mock.Setup(x =&gt; x.GetUser(It.IsInRange(1, 100, Range.Inclusive)))
+    .Returns(user);</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>AutoMocker - Simplified Mock Management</h3>
+                <div class="concept-content">
+                    <p><strong>AutoMocker</strong> from Moq.AutoMock automatically creates and wires up mocks for all constructor dependencies.</p>
+                    
+                    <h4>Why Use AutoMocker?</h4>
+                    <ul>
+                        <li><strong>Reduces Boilerplate:</strong> No need to manually create each mock</li>
+                        <li><strong>Handles Complex Dependencies:</strong> Automatically mocks all constructor parameters</li>
+                        <li><strong>Cleaner Tests:</strong> Focus on the specific mocks you need to configure</li>
+                        <li><strong>Maintainable:</strong> Adding new dependencies doesn't break existing tests</li>
+                    </ul>
+
+                    <div class="comparison">
+                        <h4>Manual Mocking vs AutoMocker</h4>
+                        
+                        <div class="comparison-section">
+                            <h5>❌ Without AutoMocker</h5>
+                            <div class="code-example">
+                                <pre><code>// Service with multiple dependencies
+public class OrderService
+{
+    private readonly IPaymentGateway _paymentGateway;
+    private readonly IInventoryService _inventoryService;
+    private readonly IEmailService _emailService;
+    private readonly ILoggingService _loggingService;
+    
+    public OrderService(IPaymentGateway paymentGateway, 
+                       IInventoryService inventoryService,
+                       IEmailService emailService,
+                       ILoggingService loggingService) { /* ... */ }
+}
+
+// Manual test setup - lots of boilerplate
+var mockPayment = new Mock&lt;IPaymentGateway&gt;();
+var mockInventory = new Mock&lt;IInventoryService&gt;();
+var mockEmail = new Mock&lt;IEmailService&gt;();
+var mockLogging = new Mock&lt;ILoggingService&gt;();
+
+mockInventory.Setup(x =&gt; x.IsInStock("Book")).Returns(true);
+mockPayment.Setup(x =&gt; x.Charge("Book")).Returns(true);
+
+var service = new OrderService(mockPayment.Object, 
+                              mockInventory.Object,
+                              mockEmail.Object, 
+                              mockLogging.Object);</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="comparison-section">
+                            <h5>✅ With AutoMocker</h5>
+                            <div class="code-example">
+                                <pre><code>using Moq;
+using Moq.AutoMock;
+
+// Clean test setup
+var mocker = new AutoMocker();
+
+// Only configure the mocks you care about
+mocker.GetMock&lt;IInventoryService&gt;()
+      .Setup(x =&gt; x.IsInStock("Book"))
+      .Returns(true);
+
+mocker.GetMock&lt;IPaymentGateway&gt;()
+      .Setup(x =&gt; x.Charge("Book"))
+      .Returns(true);
+
+// AutoMocker creates and injects all dependencies
+var service = mocker.CreateInstance&lt;OrderService&gt;();
+var result = service.PlaceOrder("Book");
+
+Assert.True(result);</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4>AutoMocker Best Practices</h4>
+                    <ul>
+                        <li><strong>Use for Complex Services:</strong> Most beneficial with 3+ dependencies</li>
+                        <li><strong>Configure Only What Matters:</strong> Set up only the mocks your test needs</li>
+                        <li><strong>Verify Important Interactions:</strong> Use <code>mocker.GetMock&lt;T&gt;().Verify()</code> for critical calls</li>
+                        <li><strong>Consider Test Readability:</strong> For simple cases, manual mocking might be clearer</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Advanced Mocking Concepts</h3>
+                <div class="concept-content">
+                    <h4>Mock Behavior Types</h4>
+                    <div class="behavior-types">
+                        <div class="behavior">
+                            <h5>Strict Mocks</h5>
+                            <p>Throw exceptions for any unexpected method calls</p>
+                            <div class="code-example">
+                                <pre><code>var mock = new Mock&lt;IService&gt;(MockBehavior.Strict);
+// Only explicitly set up methods can be called</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="behavior">
+                            <h5>Loose Mocks (Default)</h5>
+                            <p>Return default values for unset methods</p>
+                            <div class="code-example">
+                                <pre><code>var mock = new Mock&lt;IService&gt;(); // MockBehavior.Loose
+// Unset methods return defaults (null, 0, false, etc.)</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4>Callback and Sequence</h4>
+                    <div class="code-example">
+                        <pre><code>// Callback for side effects
+mock.Setup(x =&gt; x.ProcessOrder(It.IsAny&lt;Order&gt;()))
+    .Callback&lt;Order&gt;(order =&gt; order.Status = OrderStatus.Processing)
+    .Returns(true);
+
+// Sequential returns
+mock.SetupSequence(x =&gt; x.GetNextId())
+    .Returns(1)
+    .Returns(2)
+    .Returns(3);</code></pre>
+                    </div>
+
+                    <h4>Property Mocking</h4>
+                    <div class="code-example">
+                        <pre><code>// Auto-implemented property behavior
+mock.SetupAllProperties();
+
+// Specific property setup
+mock.SetupProperty(x =&gt; x.Name, "Default Name");
+
+// Property with getter/setter logic
+mock.SetupGet(x =&gt; x.IsActive).Returns(true);
+mock.SetupSet(x =&gt; x.IsActive = It.IsAny&lt;bool&gt;());</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Testing Best Practices</h3>
+                <div class="concept-content">
+                    <h4>Test Structure - AAA Pattern</h4>
+                    <div class="code-example">
+                        <pre><code>[Fact]
+public void PlaceOrder_WhenItemInStock_ReturnsTrue()
+{
+    // Arrange
+    var mocker = new AutoMocker();
+    mocker.GetMock&lt;IInventoryService&gt;()
+          .Setup(x =&gt; x.IsInStock("Book"))
+          .Returns(true);
+    mocker.GetMock&lt;IPaymentGateway&gt;()
+          .Setup(x =&gt; x.Charge("Book"))
+          .Returns(true);
+    
+    var service = mocker.CreateInstance&lt;OrderService&gt;();
+
+    // Act
+    var result = service.PlaceOrder("Book");
+
+    // Assert
+    Assert.True(result);
+    mocker.GetMock&lt;IPaymentGateway&gt;()
+          .Verify(x =&gt; x.Charge("Book"), Times.Once);
+}</code></pre>
+                    </div>
+
+                    <h4>Test Naming Conventions</h4>
+                    <ul>
+                        <li><strong>Method_Scenario_ExpectedResult:</strong> <code>PlaceOrder_WhenItemOutOfStock_ReturnsFalse</code></li>
+                        <li><strong>Should_ExpectedResult_When_Scenario:</strong> <code>Should_ReturnFalse_When_ItemOutOfStock</code></li>
+                        <li><strong>Given_When_Then:</strong> <code>Given_ItemOutOfStock_When_PlaceOrder_Then_ReturnsFalse</code></li>
+                    </ul>
+
+                    <h4>Common Anti-Patterns to Avoid</h4>
+                    <ul>
+                        <li><strong>Over-Mocking:</strong> Don't mock value objects or simple data structures</li>
+                        <li><strong>Testing Implementation Details:</strong> Test behavior, not internal method calls</li>
+                        <li><strong>Complex Test Setup:</strong> If setup is complex, consider refactoring the production code</li>
+                        <li><strong>Shared Test State:</strong> Each test should be independent</li>
+                        <li><strong>Testing Multiple Concerns:</strong> One test should verify one behavior</li>
+                    </ul>
+
+                    <h4>Integration with Dependency Injection</h4>
+                    <div class="code-example">
+                        <pre><code>// Testing with DI container
+public class ServiceTests
+{
+    private readonly ServiceCollection _services;
+    private readonly ServiceProvider _provider;
+
+    public ServiceTests()
+    {
+        _services = new ServiceCollection();
+        _services.AddScoped&lt;OrderService&gt;();
+        
+        // Replace real services with mocks
+        var mockPayment = new Mock&lt;IPaymentGateway&gt;();
+        _services.AddScoped(_ =&gt; mockPayment.Object);
+        
+        _provider = _services.BuildServiceProvider();
+    }
+
+    [Fact]
+    public void TestWithDI()
+    {
+        var service = _provider.GetService&lt;OrderService&gt;();
+        // Test the service...
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="best-practices" class="topic-section">
             <h2>Best Practices & DevOps</h2>
             
@@ -4867,7 +5180,7 @@ app.Run();</code></pre>
                 <ul class="best-practices-list">
                     <li><strong>Clean Code:</strong> Descriptive naming, single responsibility</li>
                     <li><strong>Error Handling:</strong> Try-catch blocks, custom exceptions, logging</li>
-                    <li><strong>Unit Testing:</strong> xUnit, NUnit, mocking with Moq</li>
+                    <li><strong>Unit Testing:</strong> <a href="#unit-testing-mocking">Comprehensive testing with xUnit, NUnit, and Moq framework</a></li>
                     <li><strong>Code Reviews:</strong> Peer review process, SOLID principles enforcement</li>
                 </ul>
             </div>
