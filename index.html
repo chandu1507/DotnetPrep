@@ -5096,6 +5096,256 @@ mock.SetupSet(x =&gt; x.IsActive = It.IsAny&lt;bool&gt;());</code></pre>
             </div>
 
             <div class="concept-card">
+                <h3>Test Isolation in Layered Architecture</h3>
+                <div class="concept-content">
+                    <p><strong>Key Principle:</strong> Unit test each layer in isolation and only mock that layer's <em>direct dependencies</em>.</p>
+                    
+                    <div class="architecture-layers">
+                        <h4>Typical 3-Layer Architecture</h4>
+                        <ul>
+                            <li><strong>Controller Layer</strong> → depends on Service Layer</li>
+                            <li><strong>Service Layer</strong> → depends on Repository Layer</li>
+                            <li><strong>Repository Layer</strong> → depends on Database/External Systems</li>
+                        </ul>
+                    </div>
+
+                    <div class="testing-strategy">
+                        <h4>Testing Strategy by Layer</h4>
+                        
+                        <div class="layer-test">
+                            <h5>🎯 Controller Tests - Mock Service Only</h5>
+                            <p>Controllers only know about services, not repositories. Don't over-mock!</p>
+                            <div class="code-example">
+                                <pre><code>public class OrdersController : ControllerBase
+{
+    private readonly IOrderService _service;
+    
+    public OrdersController(IOrderService service) => _service = service;
+
+    [HttpGet("{id}")]
+    public async Task&lt;IActionResult&gt; Get(string id)
+    {
+        var order = await _service.GetAsync(id);
+        return order is null ? NotFound() : Ok(order);
+    }
+}
+
+// ✅ Controller Test - Mock Service Only
+[Fact]
+public async Task Get_ReturnsOk_WhenServiceReturnsOrder()
+{
+    // Arrange
+    var mockService = new Mock&lt;IOrderService&gt;();
+    mockService.Setup(s =&gt; s.GetAsync("A1"))
+               .ReturnsAsync(new OrderDto { Id = "A1", Total = 100 });
+    
+    var controller = new OrdersController(mockService.Object);
+
+    // Act
+    var result = await controller.Get("A1");
+
+    // Assert
+    var okResult = Assert.IsType&lt;OkObjectResult&gt;(result);
+    var dto = Assert.IsType&lt;OrderDto&gt;(okResult.Value);
+    Assert.Equal("A1", dto.Id);
+    
+    // Verify only service interaction
+    mockService.Verify(s =&gt; s.GetAsync("A1"), Times.Once);
+    mockService.VerifyNoOtherCalls();
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="layer-test">
+                            <h5>🎯 Service Tests - Mock Repository Only</h5>
+                            <p>Services know about repositories, not the database implementation details.</p>
+                            <div class="code-example">
+                                <pre><code>public class OrderService : IOrderService
+{
+    private readonly IOrderRepository _repository;
+    private readonly IEmailService _emailService;
+    
+    public OrderService(IOrderRepository repository, IEmailService emailService)
+    {
+        _repository = repository;
+        _emailService = emailService;
+    }
+
+    public async Task&lt;OrderDto?&gt; GetAsync(string id)
+    {
+        var entity = await _repository.FindAsync(id);
+        if (entity is null) return null;
+        
+        return new OrderDto 
+        { 
+            Id = entity.Id, 
+            Total = entity.Items.Sum(i =&gt; i.Price) 
+        };
+    }
+}
+
+// ✅ Service Test - Mock Repository Only
+[Fact]
+public async Task GetAsync_ReturnsDto_WhenRepositoryFindsEntity()
+{
+    // Arrange - Using AutoMocker for cleaner setup
+    var mocker = new AutoMocker();
+    
+    var orderEntity = new Order 
+    { 
+        Id = "A1", 
+        Items = new[] { new OrderItem { Price = 50 }, new OrderItem { Price = 50 } }
+    };
+    
+    mocker.GetMock&lt;IOrderRepository&gt;()
+          .Setup(r =&gt; r.FindAsync("A1"))
+          .ReturnsAsync(orderEntity);
+
+    var service = mocker.CreateInstance&lt;OrderService&gt;();
+
+    // Act
+    var result = await service.GetAsync("A1");
+
+    // Assert
+    Assert.NotNull(result);
+    Assert.Equal("A1", result!.Id);
+    Assert.Equal(100, result.Total);
+    
+    // Verify repository interaction
+    mocker.GetMock&lt;IOrderRepository&gt;()
+          .Verify(r =&gt; r.FindAsync("A1"), Times.Once);
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="layer-test">
+                            <h5>🎯 Repository Tests - Use Test Database</h5>
+                            <p>For repositories, use real data access against a test database (SQLite in-memory, EF InMemory, or TestContainers).</p>
+                            <div class="code-example">
+                                <pre><code>public class OrderRepositoryTests : IDisposable
+{
+    private readonly DbContextOptions&lt;OrderContext&gt; _options;
+    private readonly OrderContext _context;
+    private readonly OrderRepository _repository;
+
+    public OrderRepositoryTests()
+    {
+        _options = new DbContextOptionsBuilder&lt;OrderContext&gt;()
+            .UseSqlite("DataSource=:memory:")
+            .Options;
+            
+        _context = new OrderContext(_options);
+        _context.Database.OpenConnection();
+        _context.Database.EnsureCreated();
+        
+        _repository = new OrderRepository(_context);
+    }
+
+    [Fact]
+    public async Task FindAsync_ReturnsOrder_WhenExists()
+    {
+        // Arrange
+        var order = new Order { Id = "TEST1", CustomerId = "C1" };
+        _context.Orders.Add(order);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.FindAsync("TEST1");
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal("TEST1", result!.Id);
+        Assert.Equal("C1", result.CustomerId);
+    }
+
+    public void Dispose()
+    {
+        _context.Database.CloseConnection();
+        _context.Dispose();
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testing-antipatterns">
+                        <h4>❌ Common Anti-Patterns</h4>
+                        <ul>
+                            <li><strong>Over-Mocking:</strong> Mocking both Service AND Repository in Controller tests</li>
+                            <li><strong>Chain Mocking:</strong> Setting up mocks for dependencies your SUT doesn't directly use</li>
+                            <li><strong>God Tests:</strong> Testing the entire request pipeline in a single unit test</li>
+                            <li><strong>Mock Leakage:</strong> Knowledge of internal implementation details in tests</li>
+                        </ul>
+                    </div>
+
+                    <div class="integration-vs-unit">
+                        <h4>Unit Tests vs Integration Tests</h4>
+                        <div class="test-comparison">
+                            <div class="test-type">
+                                <h5>🔬 Unit Tests</h5>
+                                <ul>
+                                    <li><strong>Scope:</strong> Single class/method in isolation</li>
+                                    <li><strong>Dependencies:</strong> Mock direct dependencies only</li>
+                                    <li><strong>Speed:</strong> Very fast (&lt;1ms per test)</li>
+                                    <li><strong>Purpose:</strong> Verify business logic correctness</li>
+                                </ul>
+                            </div>
+                            <div class="test-type">
+                                <h5>🔗 Integration Tests</h5>
+                                <ul>
+                                    <li><strong>Scope:</strong> Multiple layers working together</li>
+                                    <li><strong>Dependencies:</strong> Real implementations with test database</li>
+                                    <li><strong>Speed:</strong> Slower (10-100ms per test)</li>
+                                    <li><strong>Purpose:</strong> Verify component interaction</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="code-example">
+                            <pre><code>// Integration Test Example - Testing full pipeline
+public class OrdersIntegrationTests : IClassFixture&lt;WebApplicationFactory&lt;Program&gt;&gt;
+{
+    private readonly WebApplicationFactory&lt;Program&gt; _factory;
+    
+    public OrdersIntegrationTests(WebApplicationFactory&lt;Program&gt; factory)
+    {
+        _factory = factory;
+    }
+
+    [Fact]
+    public async Task GetOrder_ReturnsOrder_WhenExists()
+    {
+        // Arrange - Real HTTP client, real database
+        var client = _factory.CreateClient();
+        
+        // Act - Full HTTP request through all layers
+        var response = await client.GetAsync("/api/orders/A1");
+        
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var order = await response.Content.ReadFromJsonAsync&lt;OrderDto&gt;();
+        Assert.NotNull(order);
+        Assert.Equal("A1", order.Id);
+    }
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="testing-checklist">
+                        <h4>✅ Testing Checklist</h4>
+                        <ul>
+                            <li><strong>Controller tests:</strong> Mock service layer only</li>
+                            <li><strong>Service tests:</strong> Mock repository layer only</li>
+                            <li><strong>Repository tests:</strong> Use real data access with test DB</li>
+                            <li><strong>Integration tests:</strong> Real chain, minimal mocks</li>
+                            <li><strong>Fast feedback:</strong> Unit tests should run in milliseconds</li>
+                            <li><strong>Test independence:</strong> Each test should be isolated and repeatable</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
                 <h3>Testing Best Practices</h3>
                 <div class="concept-content">
                     <h4>Test Structure - AAA Pattern</h4>
